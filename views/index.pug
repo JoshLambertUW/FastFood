@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  
+  h1 Welcome to #[ Fast Food Coupons]
+  
+    div(style='margin-top:20px')
+    
+      h4 This site has the following data:
+
+        p
+        p #[strong Restaurants:] !{data.restaurant_count}
+        p #[strong Copies:] !{data.coupon_count}

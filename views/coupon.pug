@@ -1,0 +1,14 @@
+extends layout
+
+block content
+
+  h1 Restaurant: #{coupon.restaurant.name}
+  
+  p #[strong Description:] #{val.description}
+  if val.mobile
+    p Mobile Coupon
+  else
+    p Promo Code: #{val.code}
+  p #[strong Date Added:] #{val.date_added_formatted}
+  p #[strong Expiration Date:] #{val.date_expired_formatted}
+  p #{val.status}

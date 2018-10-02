@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{name}: #{restaurant.name}
+  p #[strong Mobile App:] #{restaurant.mobile}
+  
+  div(style='margin-top:20px')
+    h4 Coupons
+    
+    each val in coupon
+      hr
+      p #[strong Description:] #{val.description}
+      if val.mobile
+        p Mobile Coupon
+      else
+        p Promo Code: #{val.code}
+      p #[strong Date Added:] #{val.date_added_formatted}
+      p #[strong Expiration Date:] #{val.date_expired_formatted}
+      p #[strong Details:]&nbsp;
+        a(href=val.url) #{val._id}
+      p #{val.status}
+    else
+      p There are no coupons for this restaurant.
+      hr
+  p
+    a(href=restaurant.url+'/delete') Delete Restaurant
+  p
+    a(href=restaurant.url+'/update') Update Restaurant

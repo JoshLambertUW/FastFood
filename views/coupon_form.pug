@@ -1,0 +1,33 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='restaurant') Restaurant:
+      select#restaurant.form-control(type='select' placeholder='Select a restaurant' name='restaurant' required='true')
+        for restaurant in restaurant_list
+          if coupon
+            option(value=restaurant._id selected=(coupon.restaurant.toString()==restaurant._id.toString() ? 'selected' : false)) #{restaurant.title}
+          else
+            option(value=restaurant._id) #{restaurant.title}
+    div.form-group
+      label(for='description') Description:
+      input#description.form-control(type='text' placeholder='Coupon description (i.e. Discount, terms, ect)' name='description' required='true' value=(undefined===coupon ? '' : coupon.description))  
+    div.form-group
+      label(for='code') Code:
+      input#code.form-control(type='text' placeholder='Optional if N/A' name='code' required='false' value=(undefined===coupon ? '' : coupon.code))
+    div.form-group
+      label(for='date_expires') Expiration date:
+      input#date_expires.form-control(type='date' name='date_expires' value=(undefined===coupon ? '' : coupon.date_expires))
+    div.form-group
+      label(for='mobile') Mobile Coupon:
+      input#code.form-control(type='checkbox' checked=false name='mobile' required='true' value=(undefined===coupon ? false : coupon.mobile))
+
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg
