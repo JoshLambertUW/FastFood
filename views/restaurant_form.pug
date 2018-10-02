@@ -8,8 +8,8 @@ block content
       label(for='name') Name:
       input#name.form-control(type='text', placeholder='Restaurant name' name='name' required='true' value=(undefined===restaurant ? '' : restaurant.name))
     div.form-group
-      label(for='mobile') Does this restaurant have a mobile app?:
-      input#code.form-control(type='checkbox' checked=false name='mobile' required='true' value=(undefined===restaurant ? false : restaurant.mobile))
+      label(for='mobile') Does this restaurant have a mobile app?&nbsp;  
+      input.checkbox-input(type='checkbox', name='mobile' value='false' )
     
     button.btn.btn-primary(type='submit') Submit
 

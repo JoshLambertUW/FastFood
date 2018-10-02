@@ -21,8 +21,7 @@ exports.index = function(req, res) {
 
 // Display list of all restaurants
 exports.restaurant_list = function(req, res, next) {
-    Restaurant.find({}, 'name')
-    .populate('name')
+    Restaurant.find({}, 'name', {sort: { 'name': -1 }})
     .exec(function (err, list_restaurants) {
       if (err) { return next(err); }
       //Successful, so render
@@ -35,14 +34,12 @@ exports.restaurant_detail = function(req, res, next) {
 
     async.parallel({
         restaurant: function(callback) {
-
-            restaurant.findById(req.params.id)
-              .populate('mobile')
+            Restaurant.findById(req.params.id)
               .exec(callback);
         },
         coupon: function(callback) {
 
-          coupon.find({ 'restaurant': req.params.id })
+          Coupon.find({ 'restaurant': req.params.id })
           .exec(callback);
         },
     }, function(err, results) {
@@ -53,7 +50,7 @@ exports.restaurant_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('restaurant_detail', { title: 'Name', restaurant:  results.restaurant, coupons: results.coupon } );
+        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon } );
     });
 
 };
@@ -69,7 +66,6 @@ exports.restaurant_create_post = [
 
     // Validate input
     body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-    body('mobile', 'Please check mobile requirement').isBoolean(),
   
     // Sanitize field
     sanitizeBody('name').trim().escape(),
@@ -83,7 +79,7 @@ exports.restaurant_create_post = [
         // Create a restaurant object with escaped and trimmed data.
         var restaurant = new Restaurant(
           { name: req.body.name,
-            mobile: req.body.mobile,
+            mobile: req.body.mobile ? true : false,
           });
 
         if (!errors.isEmpty()) {
@@ -160,8 +156,8 @@ exports.restaurant_update_post = [
 
         // Create a restaurant object with escaped/trimmed data and old id.
         var restaurant = new Restaurant(
-        {  name: req.body.name},
-           mobile: req.body.mobile,
+        {  name: req.body.name,
+           mobile: req.body.mobile ? true : false,
         });
 
         if (!errors.isEmpty()) {

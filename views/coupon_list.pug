@@ -6,13 +6,14 @@ block content
     h4
     ul
       each val in coupon_list
-        li
           hr
+          p #[strong Restaurant:] #{val.restaurant.name}
           p #[strong Description:] #{val.description}
           p #[strong Date Added:] #{val.date_added_formatted}
           p #[strong Expiration Date:] #{val.date_expired_formatted}
-          p # a(href=val.url) #[strong Details:]
           p #{val.status}
+          a(href=val.url) #[strong Details]
+          p
           hr
       else
        p There are no coupons at this time.

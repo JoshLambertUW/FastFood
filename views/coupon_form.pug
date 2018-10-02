@@ -9,21 +9,21 @@ block content
       select#restaurant.form-control(type='select' placeholder='Select a restaurant' name='restaurant' required='true')
         for restaurant in restaurant_list
           if coupon
-            option(value=restaurant._id selected=(coupon.restaurant.toString()==restaurant._id.toString() ? 'selected' : false)) #{restaurant.title}
+            option(value=restaurant._id selected=(coupon.restaurant.toString()==restaurant._id.toString() ? 'selected' : false)) #{restaurant.name}
           else
-            option(value=restaurant._id) #{restaurant.title}
+            option(value=restaurant._id) #{restaurant.name}
     div.form-group
       label(for='description') Description:
       input#description.form-control(type='text' placeholder='Coupon description (i.e. Discount, terms, ect)' name='description' required='true' value=(undefined===coupon ? '' : coupon.description))  
     div.form-group
       label(for='code') Code:
-      input#code.form-control(type='text' placeholder='Optional if N/A' name='code' required='false' value=(undefined===coupon ? '' : coupon.code))
+      input#code.form-control(type='text' placeholder='Optional if N/A' name='code' value=(undefined===coupon ? '' : coupon.code))
     div.form-group
       label(for='date_expires') Expiration date:
       input#date_expires.form-control(type='date' name='date_expires' value=(undefined===coupon ? '' : coupon.date_expires))
     div.form-group
-      label(for='mobile') Mobile Coupon:
-      input#code.form-control(type='checkbox' checked=false name='mobile' required='true' value=(undefined===coupon ? false : coupon.mobile))
+      label(for='mobile') Mobile Coupon:&nbsp;
+      input.checkbox-input(type='checkbox' name='mobile' value='false')
 
     button.btn.btn-primary(type='submit') Submit
 

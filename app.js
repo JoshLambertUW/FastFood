@@ -10,7 +10,7 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 var mongoose = require('mongoose');
-var mongoDB = ;
+var mongoDB = 'mongodb://fast_food:jZn6542ihKbR6wR@ds018558.mlab.com:18558/fast_food';
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;

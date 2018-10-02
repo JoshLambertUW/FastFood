@@ -1,13 +1,13 @@
 extends layout
 
 block content
-  h1 #{name}: #{restaurant.name}
+  h1 #{restaurant.name}
   p #[strong Mobile App:] #{restaurant.mobile}
   
   div(style='margin-top:20px')
-    h4 Coupons
+    h4 Coupons:
     
-    each val in coupon
+    each val in coupons
       hr
       p #[strong Description:] #{val.description}
       if val.mobile
@@ -22,7 +22,3 @@ block content
     else
       p There are no coupons for this restaurant.
       hr
-  p
-    a(href=restaurant.url+'/delete') Delete Restaurant
-  p
-    a(href=restaurant.url+'/update') Update Restaurant

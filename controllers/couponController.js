@@ -8,7 +8,7 @@ const { sanitizeBody } = require('express-validator/filter');
 // Display list of all Coupons.
 exports.coupon_list = function(req, res, next) {
   Coupon.find()
-    .populate('restaurant', { sort: { 'date_added': -1 } })
+    .populate('restaurant')
     .exec(function (err, list_coupons) {
       if (err) { return next(err); }
       // Successful, so render
@@ -29,18 +29,18 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
-      res.render('', { title: 'Restaurant coupon:', coupon:  coupon});
+      res.render('coupon', { title: 'Restaurant coupon:', coupon: coupon});
     })
 
 };
 
 // Display Coupon create form on GET.
 exports.coupon_create_get = function(req, res, next) {       
-    Restaurant.find({},'name')
+    Restaurant.find({},'name',{ sort: { 'name': 1 } })
     .exec(function (err, restaurants) {
       if (err) { return next(err); }
       // Successful, so render.
-      res.render('coupon_form', {title: 'Create Coupon', resturant_list:restaurants});
+      res.render('coupon_form', {title: 'Create Coupon', restaurant_list:restaurants});
     });
     
 };
@@ -52,7 +52,6 @@ exports.coupon_create_post = [
     body('description', 'Description must be added').isLength({ min: 1 }).trim(),
     body('code').trim(),
     body('date_expires', 'Invalid date').optional({ checkFalsy: true }).isISO8601(),
-    body('mobile', 'Please check mobile requirement').isBoolean(),
     
     // Sanitize fields.
     sanitizeBody('restaurant').trim().escape(),
@@ -69,9 +68,9 @@ exports.coupon_create_post = [
         var coupon = new Coupon(
           { restaurant: req.body.restaurant,
             description: req.body.description,
-            date_added: moment().format('MMMM Do, YYYY'),
+            date_added: new Date(),
             date_expires: req.body.date_expires,
-            mobile: req.body.mobile,
+            mobile: req.body.mobile ? true : false,
            });
 
         if (!errors.isEmpty()) {
