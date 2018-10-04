@@ -12,3 +12,6 @@ block content
   p #[strong Date Added:] #{coupon.date_added_formatted}
   p #[strong Expiration Date:] #{coupon.date_expired_formatted}
   p #{coupon.status}
+  
+  p
+  a(href=coupon.url+'/delete') Delete Coupon

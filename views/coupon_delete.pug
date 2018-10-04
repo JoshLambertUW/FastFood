@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1 #{title}?
+  p= coupon.description
+  p
+  
+    p Do you really want to delete this coupon?
+    
+    form(method='POST' action='')
+      div.form-group
+        input#couponid.form-control(type='hidden',name='couponid', required='true',   value=coupon._id )
+
+      button.btn.btn-primary(type='submit') Delete

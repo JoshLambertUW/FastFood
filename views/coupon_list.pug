@@ -3,10 +3,13 @@ extends layout
 block content
   h1= title
     
-    h4
-    ul
+    div(style='margin-top:30px')
+    
+    h4= description
+    
+    div(style='margin-top:30px')
+    
       each val in coupon_list
-          hr
           p #[strong Restaurant:] #{val.restaurant.name}
           p #[strong Description:] #{val.description}
           p #[strong Date Added:] #{val.date_added_formatted}

@@ -5,7 +5,7 @@ var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
 
 // GET home page.
-router.get('/', restaurant_controller.index);
+router.get('/', coupon_controller.index);
 
 // GET request for creating a Restaurant. NOTE This must come before routes that display Restaurant (uses id).
 

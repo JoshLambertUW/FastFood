@@ -6,19 +6,6 @@ const { sanitizeBody } = require('express-validator/filter');
 
 var async = require('async');
 
-exports.index = function(req, res) {   
-    async.parallel({
-        RestaurantCount: function(callback) {
-            Restaurant.countDocuments({}, callback);
-        },
-        CouponCount: function(callback) {
-            Coupon.countDocuments({}, callback);
-        },
-    }, function(err, results) {
-        res.render('index', { title: 'Fast Food Home', error: err, data: results });
-    });
-};
-
 // Display list of all restaurants
 exports.restaurant_list = function(req, res, next) {
     Restaurant.find({}, 'name', {sort: { 'name': -1 }})

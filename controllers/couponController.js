@@ -17,6 +17,19 @@ exports.coupon_list = function(req, res, next) {
     
 };
 
+exports.index = function(req, res, next) {
+    Coupon.find()
+    .sort({'date_added': -1})
+    .limit(10)
+    .populate('restaurant')
+    .exec(function (err, list_coupons) {
+      if (err) { return next(err); }
+      // Successful, so render
+      res.render('coupon_list', { title: 'Welcome to Fast Food Coupons', description: 'Latest coupons:', coupon_list: list_coupons });
+    });
+
+}
+
 // Display detail page for a specific Coupon.
 exports.coupon_detail = function(req, res, next) {
     Coupon.findById(req.params.id)
@@ -95,13 +108,28 @@ exports.coupon_create_post = [
 ];
 
 // Display Coupon delete form on GET.
-exports.coupon_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Coupon delete GET');
+exports.coupon_delete_get = function(req, res, next) {
+    Coupon.findById(req.params.id)
+    .exec(function (err, coupon) {
+      if (err) { return next(err); }
+      if (coupon == null){
+          res.redirect('/coupons');
+      }
+      // Successful, so render.
+      res.render('coupon_delete', {title: 'Delete Coupon', coupon: coupon});
+    });
 };
 
 // Handle Coupon delete on POST.
-exports.coupon_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Coupon delete POST');
+exports.coupon_delete_post = function(req, res, next) {
+    Coupon.findById(req.body.couponid)
+    .exec(function (err, results) {
+      if (err) { return next(err); }
+      Coupon.findByIdAndRemove(req.body.couponid, function deleteCoupon(err) {
+          if (err) { return next(err); }
+          res.redirect('/coupons')
+      })
+    });
 };
 
 // Display Coupon update form on GET.
