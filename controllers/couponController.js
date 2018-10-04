@@ -81,6 +81,7 @@ exports.coupon_create_post = [
         var coupon = new Coupon(
           { restaurant: req.body.restaurant,
             description: req.body.description,
+            code: req.body.code,
             date_added: new Date(),
             date_expires: req.body.date_expires,
             mobile: req.body.mobile ? true : false,

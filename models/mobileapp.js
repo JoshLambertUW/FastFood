@@ -10,7 +10,7 @@ var MobileSchema = new Schema(
   }
 );
 
-// Virtual for genres's URL
+// Virtual for mobile's URL
 MobileSchema
 .virtual('url')
 .get(function () {

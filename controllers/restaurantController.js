@@ -53,9 +53,16 @@ exports.restaurant_create_post = [
 
     // Validate input
     body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
+    body('site', 'Site must a be url').matches(@^(http\:\/\/|https\:\/\/)?([a-z0-9][a-z0-9\-]*\.)+[a-z0-9][a-z0-9\-]*$@i).trim(),
+
+    // Sanitize fields.
+    sanitizeBody('name').trim().escape(),
+    sanitizeBody('site').trim().escape(),
+    
   
     // Sanitize field
     sanitizeBody('name').trim().escape(),
+    sanitizeBody('site').trim(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -66,6 +73,7 @@ exports.restaurant_create_post = [
         // Create a restaurant object with escaped and trimmed data.
         var restaurant = new Restaurant(
           { name: req.body.name,
+            site: req.body.site,
             mobile: req.body.mobile ? true : false,
           });
 
@@ -130,10 +138,11 @@ exports.restaurant_update_post = [
    
     // Validate fields.
     body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-    body('mobile', 'Please check mobile requirement').isBoolean(),
+    body('site', 'Site must a be url').matches(@^(http\:\/\/|https\:\/\/)?([a-z0-9][a-z0-9\-]*\.)+[a-z0-9][a-z0-9\-]*$@i).trim(),
 
     // Sanitize fields.
     sanitizeBody('name').trim().escape(),
+    sanitizeBody('site').trim().escape(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -144,6 +153,7 @@ exports.restaurant_update_post = [
         // Create a restaurant object with escaped/trimmed data and old id.
         var restaurant = new Restaurant(
         {  name: req.body.name,
+           site: req.body.site,
            mobile: req.body.mobile ? true : false,
         });
 
