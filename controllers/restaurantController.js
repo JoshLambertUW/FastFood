@@ -53,16 +53,10 @@ exports.restaurant_create_post = [
 
     // Validate input
     body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-    body('site', 'Site must a be url').matches(@^(http\:\/\/|https\:\/\/)?([a-z0-9][a-z0-9\-]*\.)+[a-z0-9][a-z0-9\-]*$@i).trim(),
 
     // Sanitize fields.
     sanitizeBody('name').trim().escape(),
     sanitizeBody('site').trim().escape(),
-    
-  
-    // Sanitize field
-    sanitizeBody('name').trim().escape(),
-    sanitizeBody('site').trim(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {
@@ -104,13 +98,44 @@ exports.restaurant_create_post = [
 ];
 
 // Display restaurant delete form on GET.
-exports.restaurant_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: restaurant delete GET');
+exports.restaurant_delete_get = function(req, res, next) {
+    Restaurant.findById(req.params.id)
+    .exec(function (err, restaurant) {
+      if (err) { return next(err); }
+      if (restaurant==null) { // No results.
+          var err = new Error('Restaurant not found');
+          err.status = 404;
+          return next(err);
+        }
+      // Successful, so render.
+      res.render('restaurant_delete', { title: 'Delete restaurant', restaurant: restaurant});
+    });
 };
 
 // Handle restaurant delete on POST.
-exports.restaurant_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: restaurant delete POST');
+exports.restaurant_delete_post = function(req, res, next) {
+    async.parallel({
+        restaurant: function(callback) {
+          Restaurant.findById(req.body.restaurantid).exec(callback)
+        },
+        restaurant_coupons: function(callback) {
+          Coupon.find({ 'restaurant': req.body.restaurantid }).exec(callback)
+        },
+    }, function(err, results) {
+        if (err) { return next(err); }
+        else {
+            for (var i = 0; i < results.restaurant_coupons.length ; i++){
+                Coupon.findByIdAndRemove(results.restaurant_coupons[i]._id, function deleteCoupon(err) {
+                if (err) { return next(err); }
+                })
+            }
+            Restaurant.findByIdAndRemove(req.body.restaurantid, function deleteRestaurant(err) {
+                if (err) { return next(err); }
+                // Success - go to author list
+                res.redirect('/restaurants')
+            })
+        }
+    });
 };
 
 // Display restaurant update form on GET.
@@ -135,10 +160,8 @@ exports.restaurant_update_get = function(req, res, next) {
 
 // Handle restaurant update on POST.
 exports.restaurant_update_post = [
-   
     // Validate fields.
     body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-    body('site', 'Site must a be url').matches(@^(http\:\/\/|https\:\/\/)?([a-z0-9][a-z0-9\-]*\.)+[a-z0-9][a-z0-9\-]*$@i).trim(),
 
     // Sanitize fields.
     sanitizeBody('name').trim().escape(),
@@ -155,6 +178,7 @@ exports.restaurant_update_post = [
         {  name: req.body.name,
            site: req.body.site,
            mobile: req.body.mobile ? true : false,
+           _id:req.params.id
         });
 
         if (!errors.isEmpty()) {
@@ -164,7 +188,7 @@ exports.restaurant_update_post = [
         }
         else {
             // Data from form is valid. Update the record.
-            restaurant.findByIdAndUpdate(req.params.id, restaurant, {}, function (err,therestaurant) {
+            Restaurant.findByIdAndUpdate(req.params.id, restaurant, {}, function (err,therestaurant) {
                 if (err) { return next(err); }
                    // Successful - redirect to restaurant detail page.
                    res.redirect(therestaurant.url);

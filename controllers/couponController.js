@@ -44,7 +44,6 @@ exports.coupon_detail = function(req, res, next) {
       // Successful, so render.
       res.render('coupon', { title: 'Restaurant coupon:', coupon: coupon});
     })
-
 };
 
 // Display Coupon create form on GET.
@@ -85,7 +84,7 @@ exports.coupon_create_post = [
             date_added: new Date(),
             date_expires: req.body.date_expires,
             mobile: req.body.mobile ? true : false,
-           });
+         });
 
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
@@ -134,11 +133,68 @@ exports.coupon_delete_post = function(req, res, next) {
 };
 
 // Display Coupon update form on GET.
-exports.coupon_update_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Coupon update GET');
+exports.coupon_update_get = function(req, res, next) {
+    
+    // Get restaurant, authors and genres for form.
+    async.parallel({
+        coupon: function(callback) {
+            coupon.findById(req.params.id).exec(callback);
+        },
+        //async for future expansion
+    }, function(err, results) {
+            if (err) { return next(err); }
+            if (results.coupon==null) { // No results.
+                var err = new Error('Coupon not found');
+                err.status = 404;
+                return next(err);
+            }
+            res.render('coupon_form', { title: 'Edit coupon', coupon: results.coupon });
+        });
 };
 
 // Handle coupon update on POST.
 exports.coupon_update_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Coupon update POST');
-};
+    // Validate fields.
+    body('restaurant', 'Restaurant must be specified').isLength({ min: 1 }).trim(),
+    body('description', 'Description must be added').isLength({ min: 1 }).trim(),
+    body('code').trim(),
+    body('date_expires', 'Invalid date').optional({ checkFalsy: true }).isISO8601(),
+    
+    // Sanitize fields.
+    sanitizeBody('restaurant').trim().escape(),
+    sanitizeBody('description').trim().escape(),
+    sanitizeBody('code').trim().escape(),
+    sanitizeBody('date_expires').toDate(),
+
+    // Process request after validation and sanitization.
+    (req, res, next) => {
+
+        // Extract the validation errors from a request.
+        const errors = validationResult(req);
+
+        // Create a restaurant object with escaped/trimmed data and old id.
+          var coupon = new Coupon(
+          { restaurant: req.body.restaurant,
+            description: req.body.description,
+            code: req.body.code,
+            date_added: new Date(),
+            date_expires: req.body.date_expires,
+            mobile: req.body.mobile ? true : false,
+            _id:req.params.id
+         });
+
+        if (!errors.isEmpty()) {
+
+            res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});
+            return;
+        }
+        else {
+            // Data from form is valid. Update the record.
+            Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function (err,thecoupon) {
+                if (err) { return next(err); }
+                   // Successful - redirect to detail page.
+                   res.redirect(thecoupon.url);
+                });
+        }
+    }
+];

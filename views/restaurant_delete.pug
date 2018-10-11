@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 #{title}: #{restaurant.name}
+  
+  p Do you really want to delete this restaurant and all of its coupons?
+    
+  form(method='POST' action='')
+    div.form-group
+      input#restaurantid.form-control(type='hidden',name='restaurantid', required='true', value=restaurant._id )
+
+    button.btn.btn-primary(type='submit') Delete
