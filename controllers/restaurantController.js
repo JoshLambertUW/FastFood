@@ -144,7 +144,7 @@ exports.restaurant_update_get = function(req, res, next) {
     // Get restaurant, authors and genres for form.
     async.parallel({
         restaurant: function(callback) {
-            restaurant.findById(req.params.id).exec(callback);
+            Restaurant.findById(req.params.id).exec(callback);
         },
         //async for future expansion
     }, function(err, results) {

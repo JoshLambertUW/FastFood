@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+router.use('/api', require('./api'));
+
 var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
 

@@ -5,6 +5,8 @@ var moment = require('moment');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
+var async = require('async');
+
 // Display list of all Coupons.
 exports.coupon_list = function(req, res, next) {
   Coupon.find()
@@ -42,7 +44,7 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
-      res.render('coupon', { title: 'Restaurant coupon:', coupon: coupon});
+      res.render('coupon', { title: 'Coupon details', coupon: coupon});
     })
 };
 
@@ -52,7 +54,7 @@ exports.coupon_create_get = function(req, res, next) {
     .exec(function (err, restaurants) {
       if (err) { return next(err); }
       // Successful, so render.
-      res.render('coupon_form', {title: 'Create Coupon', restaurant_list:restaurants});
+      res.render('coupon_form', {title: 'Create a coupon', restaurant_list:restaurants});
     });
     
 };
@@ -92,7 +94,7 @@ exports.coupon_create_post = [
                 .exec(function (err, restaurants) {
                     if (err) { return next(err); }
                     // Successful, so render.
-                    res.render('coupon_form', { title: 'Create Coupon', restaurant_list : restaurant, selected_restaurant : coupon.restaurant._id , errors: errors.array(), coupon:coupon });
+                    res.render('coupon_form', { title: 'Create a coupon', restaurant_list : restaurant, selected_restaurant : coupon.restaurant._id , errors: errors.array(), coupon:coupon });
             });
             return;
         }
@@ -116,7 +118,7 @@ exports.coupon_delete_get = function(req, res, next) {
           res.redirect('/coupons');
       }
       // Successful, so render.
-      res.render('coupon_delete', {title: 'Delete Coupon', coupon: coupon});
+      res.render('coupon_delete', {title: 'Delete coupon', coupon: coupon});
     });
 };
 
@@ -135,12 +137,14 @@ exports.coupon_delete_post = function(req, res, next) {
 // Display Coupon update form on GET.
 exports.coupon_update_get = function(req, res, next) {
     
-    // Get restaurant, authors and genres for form.
+    // Get restaurant for form
     async.parallel({
         coupon: function(callback) {
-            coupon.findById(req.params.id).exec(callback);
+            Coupon.findById(req.params.id).populate('restaurant').exec(callback);
         },
-        //async for future expansion
+        restaurants: function(callback){
+            Restaurant.find(callback);
+        },
     }, function(err, results) {
             if (err) { return next(err); }
             if (results.coupon==null) { // No results.
@@ -148,12 +152,12 @@ exports.coupon_update_get = function(req, res, next) {
                 err.status = 404;
                 return next(err);
             }
-            res.render('coupon_form', { title: 'Edit coupon', coupon: results.coupon });
+            res.render('coupon_form', { title: 'Edit coupon', coupon: results.coupon, restaurant_list: results.restaurants });
         });
 };
 
 // Handle coupon update on POST.
-exports.coupon_update_post = function(req, res) {
+exports.coupon_update_post = [
     // Validate fields.
     body('restaurant', 'Restaurant must be specified').isLength({ min: 1 }).trim(),
     body('description', 'Description must be added').isLength({ min: 1 }).trim(),
