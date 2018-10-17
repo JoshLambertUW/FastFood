@@ -6,9 +6,9 @@ var Schema = mongoose.Schema;
 
 var UsersSchema = new Schema(
   {
-    email: { type: String, required: true },
-    hash: { type: String, required: true },
-    salt: { type: String, required: true },
+    username: { type: String },
+    hash: { type: String },
+    salt: { type: String },
 
   }
 );
@@ -29,7 +29,7 @@ UsersSchema.methods.generateJWT = function() {
   expirationDate.setDate(today.getDate() + 60);
 
   return jwt.sign({
-    email: this.email,
+    username: this.username,
     id: this._id,
     exp: parseInt(expirationDate.getTime() / 1000, 10),
   }, 'secret');
@@ -38,10 +38,10 @@ UsersSchema.methods.generateJWT = function() {
 UsersSchema.methods.toAuthJSON = function() {
   return {
     _id: this._id,
-    email: this.email,
+    username: this.username,
     token: this.generateJWT(),
   };
 };
 
 //Export model
-module.exports = mongoose.model('Users', UsersSchema);
+module.exports = mongoose.model('User', UsersSchema);

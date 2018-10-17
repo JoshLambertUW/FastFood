@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const router = require('express').Router();
 const auth = require('../auth');
-const Users = mongoose.model('Users');
+const Users = mongoose.model('users');
 
 //POST new user route (optional, everyone has access)
 router.post('/', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
-  if(!user.email) {
+  if(!user.username) {
     return res.status(422).json({
       errors: {
-        email: 'is required',
+        username: 'is required',
       },
     });
   }
@@ -36,10 +36,10 @@ router.post('/', auth.optional, (req, res, next) => {
 router.post('/login', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
-  if(!user.email) {
+  if(!user.username) {
     return res.status(422).json({
       errors: {
-        email: 'is required',
+        username: 'is required',
       },
     });
   }
@@ -66,6 +66,7 @@ router.post('/login', auth.optional, (req, res, next) => {
 
     return status(400).info;
   })(req, res, next);
+  
 });
 
 //GET current route (required, only authenticated users have access)

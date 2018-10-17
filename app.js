@@ -1,8 +1,33 @@
-var createError = require('http-errors');
 var express = require('express');
+var createError = require('http-errors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+
+var favicon = require('serve-favicon');
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
+var app = express();
+
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(path.join(__dirname, 'public')));
 
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -10,15 +35,9 @@ const cors = require('cors');
 const errorHandler = require('errorhandler');
 
 var indexRouter = require('./routes/index');
-var users = require('./models/Users');
-
-var passportConfig = require('./config/passport');
-
-var app = express();
 
 var helmet = require('helmet');
 
-var mongoose = require('mongoose');
 var mongoDB = '';
 
 mongoose.set('debug', true);
@@ -35,11 +54,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(helmet());
 
@@ -48,9 +64,6 @@ app.use(require('./routes'));
 
 app.use(cors());
 app.use(require('morgan')('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: '..', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 
 if(!isProduction) {
@@ -71,10 +84,8 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
 
 module.exports = app;
 
 app.listen(3000, function () {
 console.log("express has started on port 3000");
-});
