@@ -6,8 +6,6 @@ var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
 var user_controller = require('../controllers/userController');
 
-router.use('/user', require('./user'));
-
 // GET home page.
 router.get('/', coupon_controller.index);
 

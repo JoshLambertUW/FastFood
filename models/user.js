@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-
-import passportLocalMongoose from  'passport-local-mongoose';
+var passportLocalMongoose = require('passport-local-mongoose');
 
 
 var UsersSchema = new Schema(
