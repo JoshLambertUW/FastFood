@@ -4,8 +4,9 @@ var router = express.Router();
 
 var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
+var user_controller = require('../controllers/userController');
 
-router.use('/users', require('./users'));
+router.use('/user', require('./user'));
 
 // GET home page.
 router.get('/', coupon_controller.index);
@@ -64,14 +65,14 @@ router.get('/coupons', coupon_controller.coupon_list);
 
 /// AUTH ROUTES ///
 
-router.get('/users/create', user_controller.user_create_get);
+router.get('/register', user_controller.user_create_get);
 
-router.post('/users/create', user_controller.user_create_post);
+router.post('/register', user_controller.user_create_post);
 
-router.get('/users/login', user_controller.user_login_get);
+router.get('/login', user_controller.user_login_get);
 
-router.post('/users/login', user_controller.user_login_post);
+router.post('/login', user_controller.user_login_post);
 
-router.get('/users/account', user_controller.user_get);
+router.get('/profile', user_controller.user_get);
 
 module.exports = router;

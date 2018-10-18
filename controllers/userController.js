@@ -1,27 +1,21 @@
 var User = require('../models/user');
 var Coupon = require('../models/coupon');
+import bodyParser from 'body-parser';
+import passport from 'passport';
+const AuthController = {};
+import jwt from 'jsonwebtoken';
 
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 var async = require('async');
 
-router.get('/users/create', user_controller.user_create_get);
-
-router.post('/users/create', user_controller.user_create_post);
-
-router.get('/users/login', user_controller.user_login_get);
-
-router.post('/users/login', user_controller.user_login_post);
-
-router.get('/users/account', user_controller.user_get);
-
 exports.user_get = function(res, req) {
-    res.render('profile', {user:});
+    res.render('profile', {user: req.user});
 }
 
 exports.user_create_get = function(req, res) {
-    res.render('register', {});
+    res.render('register', {user: req.user});
 };
 
 exports.user_create_post = [
@@ -29,8 +23,6 @@ exports.user_create_post = [
     // Validate fields.
     body('username', 'Username must not be empty.').isLength({ min: 1 }).trim(),
     body('password', 'Password must not be empty.').isLength({ min: 1 }).trim(),
-  
-    
   
     // Sanitize fields (using wildcard).
     sanitizeBody('*').trim().escape(),
@@ -41,19 +33,31 @@ exports.user_create_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
         
-        var finalUser = new User(username: req.body.username);
-        finalUser.setPassword(user.password);
-
+        var finalUser = new User({username: req.body.username});
+        
         if (!errors.isEmpty()) {
                 res.render('register', { finalUser: finalUser, errors: errors.array() });
-            });
-            return;
+                return;
         }
         else {
-            finalUser.save(function (err) {
-                if (err) { return next(err); }
-                   res.redirect('/');
+            try{
+                User.register(finalUser, req.body.password, function(err, account) {
+                    if (err) {
+                        return res.status(500).send('An error occurred: ' + err);
+                    }
+
+                    passport.authenticate(
+                        'local', {
+                            session: false
+                        })(req, res, () => {
+                        res.status(200).send('Successfully created new account');
+                        res.redirect('/');
+                    });
                 });
+            }
+            catch(err){
+                return res.status(500).send('An error occurred: ' + err);
+            }
         }
     }
 ];
@@ -76,20 +80,29 @@ exports.user_login_post = [
         
         // Extract the validation errors from a request.
         const errors = validationResult(req);
-        
-        var finalUser = new User(username: req.body.username);
-        finalUser.setPassword(user.password);
 
         if (!errors.isEmpty()) {
-                res.render('register', { finalUser: finalUser, errors: errors.array() });
-            });
-            return;
+                res.render('login', { errors: errors.array() });
+                return;
         }
+        
         else {
-            finalUser.save(function (err) {
-                if (err) { return next(err); }
-                   res.redirect('/');
+                passport.authenticate('local', {session: false}, (err, user, info) => {
+                if (err || !user) {
+                    return res.status(400).json({
+                        message: 'Something is not right',
+                        user   : user
+                    });
+                }
+                req.login(user, {session: false}, (err) => {
+                    if (err) {
+                        res.send(err);
+                    }
+                    // generate a signed son web token with the contents of user object and return it in the response
+                    const token = jwt.sign({ id: user.id, email: user.username}, '');
+                    return res.json({user: user.username, token});
                 });
+            })(req, res);    
         }
     }
 ];

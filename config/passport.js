@@ -1,19 +1,30 @@
 const mongoose = require('mongoose');
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
 
-const Users = mongoose.model('Users');
+const passportJWT = require("passport-jwt");
+const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = passportJWT.ExtractJwt;
+const LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy({
-  usernameField: 'user[username]',
-  passwordField: 'user[password]',
-}, (username, password, done) => {
-  Users.findOne({ username })
-    .then((user) => {
-      if(!user || !user.validatePassword(password)) {
-        return done(null, false, { errors: { 'username or password': 'is invalid' } });
-      }
-
-      return done(null, user);
-    }).catch(done);
-}));
+        usernameField: 'user',
+        passwordField: 'password'
+    },
+    User.authenticate()
+));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+passport.use(new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey   : 'ILovePokemon'
+    },
+    function (jwtPayload, cb) {
+        return User.findById(jwtPayload.id)
+            .then(user => {
+                return cb(null, user);
+            })
+            .catch(err => {
+                return cb(err);
+            });
+    }
+));
