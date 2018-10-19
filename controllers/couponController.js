@@ -19,19 +19,6 @@ exports.coupon_list = function(req, res, next) {
     
 };
 
-exports.index = function(req, res, next) {
-    Coupon.find()
-    .sort({'date_added': -1})
-    .limit(10)
-    .populate('restaurant')
-    .exec(function (err, list_coupons) {
-      if (err) { return next(err); }
-      // Successful, so render
-      res.render('coupon_list', { title: 'Welcome to Fast Food Coupons', description: 'Latest coupons:', coupon_list: list_coupons });
-    });
-
-}
-
 // Display detail page for a specific Coupon.
 exports.coupon_detail = function(req, res, next) {
     Coupon.findById(req.params.id)

@@ -4,10 +4,18 @@ block content
   
   h1 Welcome to Fast Food Coupons
   
-    div(style='margin-top:20px')
+     div(style='margin-top:30px')
+     
+     h4 Latest Deals:
+     
+     div(style='margin-top:30px')
     
-      h4 Latest coupons:
-        
-        p
-        p #[strong Restaurants:] !{data.restaurant_count}
-        p #[strong Coupons:] !{data.coupon_count}
+      each val in coupon_list
+          p #[strong Restaurant:] #{val.restaurant.name}
+          p #[strong Description:] #{val.description}
+          p #[strong Date Added:] #{val.date_added_formatted}
+          p #[strong Expiration Date:] #{val.date_expired_formatted}
+          p #{val.status}
+          a(href=val.url) #[strong Details]
+          p
+          hr

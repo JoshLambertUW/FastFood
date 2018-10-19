@@ -1,13 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-
 var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
 var user_controller = require('../controllers/userController');
 
 // GET home page.
-router.get('/', coupon_controller.index);
+router.get('/', user_controller.index);
 
 // GET request for creating a Restaurant. NOTE This must come before routes that display Restaurant (uses id).
 
@@ -72,5 +71,7 @@ router.get('/login', user_controller.user_login_get);
 router.post('/login', user_controller.user_login_post);
 
 router.get('/profile', user_controller.user_get);
+
+router.get('logout', user_controller.user_logout);
 
 module.exports = router;
