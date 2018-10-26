@@ -8,31 +8,36 @@ var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
-
-var LocalStrategy = require('passport-local').Strategy;
+var session = require('express-session');
 
 var routes = require('./routes/index');
 
 var app = express();
 
-app.use(require('express-session')({
-    secret: 'hWmZq4t7w9z$C&F)J@NcRfUjXn2r5u8x', //random key
-    resave: false,
-    saveUninitialized: false
+app.use(session({
+  secret: 'hWmZq4t7w9z$C&F)J@NcRfUjXn2r5u8x',
+  resave: false,
+  saveUninitialized: false
 }));
-app.use(passport.initialize());
-app.use(passport.session());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(cookieParser('hWmZq4t7w9z$C&F)J@NcRfUjXn2r5u8x'));
 
 var User = require('./models/user');
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 var helmet = require('helmet');
 
-var mongoDB = 'mongodb://fast_food:jZn6542ihKbR6wR@ds018558.mlab.com:18558/fast_food';
+var mongoDB = ''
 
 mongoose.set('debug', true);
 

@@ -26,7 +26,7 @@ html(lang='en')
               li 
                 a(href='/coupon/create') Submit a coupon
               hr
-              if (!user)
+              if (!req.user)
                 a(href='/login') Login
                 br
                 a(href='/register') Register

@@ -10,23 +10,25 @@ exports.index = function(req, res, next) {
     .populate('restaurant')
     .exec(function (err, list_coupons) {
       if (err) { return next(err); }
-      res.render('index', {user: req.user, coupon_list: list_coupons });
+      res.render('index', {coupon_list: list_coupons });
     });
 }
 
 exports.user_get = function(req, res) {
     if (!req.user) res.redirect('/');
-    else res.render('profile', {user: req.user});
+    res.render('profile', {user: req.user});
 }
 
 exports.user_create_get = function(req, res) {
+    if (!req.user) res.redirect('/');
     res.render('register');
 };
 
 exports.user_create_post = function(req, res) {
     User.register(new User({ username : req.body.username }), req.body.password, function(err) {
         if (err) {
-            return res.render('register', {error: err.message);
+            console.log(err.message);
+            return res.render('register', {error: err.message});
         }
         passport.authenticate('local')(req, res, function () {
             res.redirect('/');
@@ -39,8 +41,8 @@ exports.user_login_get = function(req, res) {
 };
 
 exports.user_login_post = function(req, res) {
-    passport.authenticate('local')(req, res, function(){
-        res.redirect('/');
+    passport.authenticate('local')(req, res, function () {
+      return res.redirect('/');
     });
 };
 
@@ -48,4 +50,3 @@ exports.user_logout = function(req, res) {
     req.logout();
     res.redirect('/');
 };
-
