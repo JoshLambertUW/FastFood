@@ -111,13 +111,16 @@ exports.coupon_delete_get = function(req, res, next) {
 
 // Handle Coupon delete on POST.
 exports.coupon_delete_post = function(req, res, next) {
-    Coupon.findById(req.body.couponid)
+    Coupon.findById(req.body.couponid).populate('user')
     .exec(function (err, results) {
       if (err) { return next(err); }
+      if (req.user.id != results.user._id){
+          return next({Code: 403, error:'Access denied'});
+      }
       Coupon.findByIdAndRemove(req.body.couponid, function deleteCoupon(err) {
           if (err) { return next(err); }
-          res.redirect('/coupons')
-      })
+          res.redirect('/coupons');
+      });
     });
 };
 
@@ -127,7 +130,7 @@ exports.coupon_update_get = function(req, res, next) {
     // Get restaurant for form
     async.parallel({
         coupon: function(callback) {
-            Coupon.findById(req.params.id).populate('restaurant').populate('user').exec(callback);
+            Coupon.findById(req.params.id).populate('restaurant').exec(callback);
         },
         restaurants: function(callback){
             Restaurant.find(callback);
@@ -163,10 +166,8 @@ exports.coupon_update_post = [
         // Extract the validation errors from a request.
         const errors = validationResult(req);
         
-        if ()
-        
         // Create a restaurant object with escaped/trimmed data and old id.
-          var coupon = new Coupon(
+        var coupon = new Coupon(
           { restaurant: req.body.restaurant,
             description: req.body.description,
             code: req.body.code,
@@ -174,15 +175,20 @@ exports.coupon_update_post = [
             date_expires: req.body.date_expires,
             mobile: req.body.mobile ? true : false,
             _id:req.params.id,
-            user: req.user
-         });
+            user: req.user.id,
+          });
 
         if (!errors.isEmpty()) {
             res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});
             return;
         }
         else {
-            // Data from form is valid. Update the record.
+            Coupon.findById(req.params.id).populate('user').exec(function (err, results){
+                if (err) { return next(err); }
+                if (req.user.id != results.user._id){
+                    return next({Code: 403, error:'Access denied'});
+                } 
+            });
             Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function (err,thecoupon) {
                 if (err) { return next(err); }
                    // Successful - redirect to detail page.

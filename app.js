@@ -10,6 +10,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
+var acl = require('acl');
 
 var app = express();
 
@@ -20,7 +21,7 @@ app.use(session({
 }));
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cookieParser(process.env.SESSION_SECRET));
 
