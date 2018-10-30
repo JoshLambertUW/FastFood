@@ -14,13 +14,21 @@ exports.index = function(req, res, next) {
     });
 }
 
+exports.restrict = function(req, res, next){
+    if (!req.user) {
+        req.session.redirect_to = req.path;
+        res.redirect('/login');
+    } else {
+        next();
+    }
+}
+
 exports.user_get = function(req, res) {
-    if (!req.user) res.redirect('/');
-    res.render('profile', {user: req.user});
+    res.render('profile');
 }
 
 exports.user_create_get = function(req, res) {
-    if (!req.user) res.redirect('/');
+    if (req.user) res.redirect('/');
     res.render('register');
 };
 
@@ -30,23 +38,29 @@ exports.user_create_post = function(req, res) {
             console.log(err.message);
             return res.render('register', {error: err.message});
         }
+        var redirectTo = req.session.redirect_to || '/';
+        delete req.session.redirect_to;
         passport.authenticate('local')(req, res, function () {
-            res.redirect('/');
+            res.redirect(redirectTo);
         });
     });
 };
 
 exports.user_login_get = function(req, res) {
+    if (req.user) res.redirect('/');
     res.render('login');
 };
 
 exports.user_login_post = function(req, res) {
+    var redirectTo = req.session.redirect_to || '/';
+    delete req.session.redirect_to;
     passport.authenticate('local')(req, res, function () {
-      return res.redirect('/');
+        return res.redirect(redirectTo);
     });
 };
 
 exports.user_logout = function(req, res) {
+    if (req.session.redirect_to) delete req.session.redirect_to;
     req.logout();
     res.redirect('/');
 };

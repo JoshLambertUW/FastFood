@@ -26,11 +26,11 @@ html(lang='en')
               li 
                 a(href='/coupon/create') Submit a coupon
               hr
-              if (!req.user)
+              if (!locals.user)
                 a(href='/login') Login
                 br
                 a(href='/register') Register
-              if (user)
+              if (locals.user)
                 a(href='/profile') #{user.username}
                 br
                 a(href='/logout') Logout

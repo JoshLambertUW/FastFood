@@ -12,6 +12,7 @@ var CouponSchema = new Schema(
     code: {type: String, default: ''},
     date_expires: {type: Date},
     status: {type: String, required: true, enum: ['Expired', 'Unconfirmed', 'Valid', 'Invalid'], default: 'Valid'},
+    user: { type: Schema.Types.ObjectId, ref: 'User'},
     valid_votes: {type: Number, default: 0},
     invalid_votes: {type: Number, default: 0},
     expired_votes: {type: Number, default: 0},

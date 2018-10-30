@@ -1,4 +1,5 @@
 var express = require('express');
+var dotenv = require('dotenv/config');
 var createError = require('http-errors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -10,12 +11,10 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var session = require('express-session');
 
-var routes = require('./routes/index');
-
 var app = express();
 
 app.use(session({
-  secret: 'hWmZq4t7w9z$C&F)J@NcRfUjXn2r5u8x',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false
 }));
@@ -23,7 +22,7 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use(cookieParser('hWmZq4t7w9z$C&F)J@NcRfUjXn2r5u8x'));
+app.use(cookieParser(process.env.SESSION_SECRET));
 
 var User = require('./models/user');
 passport.use(User.createStrategy());
@@ -37,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var helmet = require('helmet');
 
-var mongoDB = ''
+var mongoDB = process.env.MONGODB;
 
 mongoose.set('debug', true);
 
@@ -55,6 +54,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(helmet());
+
+app.use(function (req, res, next) {
+  res.locals.user = req.user;
+  next();
+});
 
 var indexRouter = require('./routes/index');
 app.use('/', indexRouter);
@@ -74,6 +78,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
 

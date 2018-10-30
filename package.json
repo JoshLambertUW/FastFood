@@ -27,6 +27,7 @@
     "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
+    "dotenv": "^6.1.0",
     "nodemon": "^1.18.4"
   }
 }

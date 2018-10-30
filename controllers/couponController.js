@@ -36,7 +36,7 @@ exports.coupon_detail = function(req, res, next) {
 };
 
 // Display Coupon create form on GET.
-exports.coupon_create_get = function(req, res, next) {       
+exports.coupon_create_get = function(req, res, next) {    
     Restaurant.find({},'name',{ sort: { 'name': 1 } })
     .exec(function (err, restaurants) {
       if (err) { return next(err); }
@@ -48,7 +48,6 @@ exports.coupon_create_get = function(req, res, next) {
 
 // Handle Coupon create on POST.
 exports.coupon_create_post = [
-
     body('restaurant', 'Restaurant must be specified').isLength({ min: 1 }).trim(),
     body('description', 'Description must be added').isLength({ min: 1 }).trim(),
     body('code').trim(),
@@ -73,6 +72,7 @@ exports.coupon_create_post = [
             date_added: new Date(),
             date_expires: req.body.date_expires,
             mobile: req.body.mobile ? true : false,
+            user: req.user,
          });
 
         if (!errors.isEmpty()) {
@@ -127,7 +127,7 @@ exports.coupon_update_get = function(req, res, next) {
     // Get restaurant for form
     async.parallel({
         coupon: function(callback) {
-            Coupon.findById(req.params.id).populate('restaurant').exec(callback);
+            Coupon.findById(req.params.id).populate('restaurant').populate('user').exec(callback);
         },
         restaurants: function(callback){
             Restaurant.find(callback);
@@ -162,7 +162,9 @@ exports.coupon_update_post = [
 
         // Extract the validation errors from a request.
         const errors = validationResult(req);
-
+        
+        if ()
+        
         // Create a restaurant object with escaped/trimmed data and old id.
           var coupon = new Coupon(
           { restaurant: req.body.restaurant,
@@ -171,11 +173,11 @@ exports.coupon_update_post = [
             date_added: new Date(),
             date_expires: req.body.date_expires,
             mobile: req.body.mobile ? true : false,
-            _id:req.params.id
+            _id:req.params.id,
+            user: req.user
          });
 
         if (!errors.isEmpty()) {
-
             res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});
             return;
         }
