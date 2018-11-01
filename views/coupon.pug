@@ -14,6 +14,7 @@ block content
   p #{coupon.status}
   
   p
-  a(href=coupon.url+'/delete') Delete Coupon
-  p
-  a(href=coupon.url+'/update') Update Coupon
+  if (user && user.id == coupon.user._id)
+    a(href=coupon.url+'/delete') Delete Coupon
+    br
+    a(href=coupon.url+'/update') Update Coupon

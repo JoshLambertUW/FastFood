@@ -31,7 +31,7 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
-      res.render('coupon', { title: 'Coupon details', coupon: coupon});
+      res.render('coupon', { title: 'Coupon details', coupon: coupon, user: req.user});
     })
 };
 
@@ -110,17 +110,19 @@ exports.coupon_delete_get = function(req, res, next) {
 };
 
 // Handle Coupon delete on POST.
-exports.coupon_delete_post = function(req, res, next) {
-    Coupon.findById(req.body.couponid).populate('user')
+exports.coupon_delete_post = function(req, res, next) {  
+    Coupon.findById(req.params.id)
     .exec(function (err, results) {
       if (err) { return next(err); }
-      if (req.user.id != results.user._id){
+      if (req.user.id != results.user._id && !req.user.admin){
           return next({Code: 403, error:'Access denied'});
       }
-      Coupon.findByIdAndRemove(req.body.couponid, function deleteCoupon(err) {
-          if (err) { return next(err); }
-          res.redirect('/coupons');
-      });
+      else {
+        Coupon.findByIdAndRemove(req.params.id, function (err, results) {
+            if (err) { return next(err); }
+            res.redirect('/coupons');
+        });
+      }
     });
 };
 
@@ -179,21 +181,21 @@ exports.coupon_update_post = [
           });
 
         if (!errors.isEmpty()) {
-            res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});
-            return;
+            return res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});
         }
         else {
-            Coupon.findById(req.params.id).populate('user').exec(function (err, results){
+            Coupon.findById(req.params.id).exec(function (err, results){
                 if (err) { return next(err); }
-                if (req.user.id != results.user._id){
+                if (req.user.id != results.user._id && !req.user.admin){
                     return next({Code: 403, error:'Access denied'});
-                } 
+                } else {
+                    Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function (err,thecoupon) {
+                    if (err) { return next(err); }
+                        // Successful - redirect to detail page.
+                    res.redirect(thecoupon.url);
+                    });
+                }
             });
-            Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function (err,thecoupon) {
-                if (err) { return next(err); }
-                   // Successful - redirect to detail page.
-                   res.redirect(thecoupon.url);
-                });
         }
     }
 ];

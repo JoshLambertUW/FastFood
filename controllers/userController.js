@@ -51,12 +51,24 @@ exports.user_login_get = function(req, res) {
     res.render('login');
 };
 
-exports.user_login_post = function(req, res) {
-    var redirectTo = req.session.redirect_to || '/';
-    delete req.session.redirect_to;
-    passport.authenticate('local')(req, res, function () {
+exports.user_login_post = function(req, res, next) {
+    passport.authenticate('local', function(err, user, info){
+        if (err){
+            return next(err);
+        }
+        if (!user){
+            return res.render('login', {error: 'Invalid username or password'});
+        }
+    req.logIn(user, function(err) {
+        if (err){
+            return next(err);
+        }
+        var redirectTo = req.session.redirect_to || '/';
+        delete req.session.redirect_to;
         return res.redirect(redirectTo);
+        return res.send({redirect: redirectTo});
     });
+    })(req, res, next);
 };
 
 exports.user_logout = function(req, res) {

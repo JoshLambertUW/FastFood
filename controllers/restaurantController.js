@@ -37,7 +37,7 @@ exports.restaurant_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon } );
+        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon, user: req.user } );
     });
 
 };
@@ -123,6 +123,7 @@ exports.restaurant_delete_post = function(req, res, next) {
         },
     }, function(err, results) {
         if (err) { return next(err); }
+        if (!req.user.admin) return next({Code: 403, error:'Access denied'});
         else {
             for (var i = 0; i < results.restaurant_coupons.length ; i++){
                 Coupon.findByIdAndRemove(results.restaurant_coupons[i]._id, function deleteCoupon(err) {
@@ -187,6 +188,7 @@ exports.restaurant_update_post = [
             return;
         }
         else {
+            if (!req.user.admin) return next({Code: 403, error:'Access denied'});
             // Data from form is valid. Update the record.
             Restaurant.findByIdAndUpdate(req.params.id, restaurant, {}, function (err,therestaurant) {
                 if (err) { return next(err); }

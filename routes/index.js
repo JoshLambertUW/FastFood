@@ -46,13 +46,13 @@ router.post('/coupon/create', user_controller.restrict, coupon_controller.coupon
 router.get('/coupon/:id/delete', user_controller.restrict, coupon_controller.coupon_delete_get);
 
 // POST request to delete Coupon.
-router.post('/coupon/:id/delete', passport.authenticate('local'), coupon_controller.coupon_delete_post);
+router.post('/coupon/:id/delete', user_controller.restrict, coupon_controller.coupon_delete_post);
 
 // GET request to update Coupon.
 router.get('/coupon/:id/update', user_controller.restrict, coupon_controller.coupon_update_get);
 
 // POST request to update Coupon.
-router.post('/coupon/:id/update', passport.authenticate('local'), coupon_controller.coupon_update_post);
+router.post('/coupon/:id/update', user_controller.restrict, coupon_controller.coupon_update_post);
 
 // GET request for one Coupon.
 router.get('/coupon/:id', coupon_controller.coupon_detail);
