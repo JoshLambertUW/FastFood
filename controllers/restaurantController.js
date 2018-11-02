@@ -25,7 +25,6 @@ exports.restaurant_detail = function(req, res, next) {
               .exec(callback);
         },
         coupon: function(callback) {
-
           Coupon.find({ 'restaurant': req.params.id })
           .exec(callback);
         },
@@ -183,7 +182,6 @@ exports.restaurant_update_post = [
         });
 
         if (!errors.isEmpty()) {
-
             res.render('restaurant_form', { title: 'Edit restaurant', restaurant: restaurant, errors: errors.array()});
             return;
         }

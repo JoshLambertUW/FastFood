@@ -70,7 +70,11 @@ router.get('/login', user_controller.user_login_get);
 
 router.post('/login', user_controller.user_login_post);
 
-router.get('/profile', passport.authenticate('local'), user_controller.user_get);
+router.get('/profile', user_controller.restrict, user_controller.user_get);
+
+router.post('/changepwd', user_controller.restrict, user_controller.user_changepwd_post);
+
+router.post('/fav', user_controller.restrict, user_controller.user_fav_post);
 
 router.get('/logout', user_controller.user_logout);
 

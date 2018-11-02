@@ -3,6 +3,8 @@ var Schema = mongoose.Schema;
 var passportLocalMongoose = require('passport-local-mongoose');
 
 const User = new Schema({
+    email: {type: String},
+    restaurants: [{ type : Schema.Types.ObjectId, ref: 'Restaurant' }],
     admin: {type: Boolean, default: false},
 });
 

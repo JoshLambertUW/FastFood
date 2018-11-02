@@ -25,6 +25,12 @@ block content
       hr
     
   p
+  if (user)
+    form(method='POST' action='/fav')
+      input(type='hidden', name='id', value=restaurant.id)
+      button.btn.btn-primary(type='submit') Add to favorites
+      
+  p
   if (user && user.admin)
     a(href=restaurant.url+'/delete') Delete restaurant
     br

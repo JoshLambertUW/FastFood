@@ -4,6 +4,48 @@ block content
 
   h1 Account Info
   
+  if (user.email)
+    p #[strong Email:] #{user.email}
+  
+  h2 Submitted coupons
+  
+    each val in coupon_list
+        p #[strong Restaurant:] #{val.restaurant.name}
+        p #[strong Description:] #{val.description}
+        p #[strong Date Added:] #{val.date_added_formatted}
+        p #[strong Expiration Date:] #{val.date_expired_formatted}
+        p #{val.status}
+        a(href=val.url) #[strong Details]
+        p
+        hr
+  
+  div(style='margin-top:30px')
+  
+  h2 Favorite restaurants
+  
+    each val in user.restaurants
+        p
+        a(href=val.url) #[strong #{val.name}]
+  
+  div(style='margin-top:30px')
+  
+  p
+  form(method='POST' action='/changepwd')
+    div.form-group
+      label(for='password') Old password:
+      input#password.form-control(type='password' name='password')
+    div.form-group
+      label(for='newPassword') New password:
+      input#newpassword.form-control(type='password' name='newpassword')  
+    div.form-group
+      label(for='newPassword2') Confirm new password:
+      input#newpassword2.form-control(type='password' name='newpassword2')
+
+    button.btn.btn-primary(type='submit') Confirm
+  
+  p
+  p #[strong #{msg}]
+    
   p
   a(href='/logout') Logout
   p
