@@ -25,26 +25,36 @@ exports.restrict = function(req, res, next){
 }
 
 exports.user_get = function(req, res) {
-    Coupon.find({user: req.user.id})
-    .sort({'date_added': -1})
-    .limit(5)
-    .populate('restaurant')
-    .exec(function(err, list_coupons){
-      if (err) { return next(err); }
-    res.render('profile', {coupon_list: list_coupons});
+    async.parallel({
+        coupons: function(callback){
+            Coupon.find({user: req.user.id})
+            .sort({'date_added': -1})
+            .limit(5)
+            .populate('restaurant')
+            .exec(callback);
+        },
+        favs: function(callback){
+            User.findById(req.user.id)
+            .populate('restaurants')
+            .exec(callback);
+        },
+    }, function(err, results){
+        if (err){ return next(err);}
+        console.log(results.favs);
+        res.render('profile', {coupon_list: results.coupons, restaurants: results.favs.restaurants });
     });
 }
 
 exports.user_fav_post = function(req, res, next){
     if (req.user.restaurants.indexOf(req.body.id) < 0){
-        User.findOneAndUpdate(req.user.id, {$addToSet: {restaurants: req.body.id}}, {}, function(err){
+        User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.body.id}}, {new: true}, function(err){
             if (err) { return next(err); }
             res.json(200);
         });
     }
+    
     else {
-        req.user.restaurants.pull(req.body.id);
-        User.findOneAndUpdate(req.user.id, {$pull: {restaurants: req.body.id}}, {}, function(err){
+        User.findByIdAndUpdate(req.user.id, {$pull: {restaurants: req.body.id}}, {new: true}, function(err){
             if (err){ return next(err); }
             res.json(200);
         });
@@ -96,17 +106,18 @@ exports.user_login_post = function(req, res, next) {
 };
 
 exports.user_changepwd_post = function(req, res, next) {
-    
-    if (req.body.newPassword != req.body.newPassword2) {
-        return res.render('profile', {msg: 'Passwords do not match'});
-    }
-    req.user.changePassword(req.body.password, req.body.newPassword, function(err){
-        if (err){
-            return res.render('profile', {msg: 'Old password is incorrect'});
-        }
-        console.log(req.body.password + req.body.newPassword);
-        return res.render('profile', {msg: 'Password changed'});
-    })(req, res, next);
+    User.findById(req.user.id)
+    .exec(function(err, user){
+      if (err){ return next(err); }
+      if (user){
+        user.setPassword(req.body.newPassword, function(){
+            user.save();
+            res.redirect('/profile');
+        });
+      } else {
+        res.status(500).json({message: 'This user does not exist'});
+      }
+      });
 };
 
 exports.user_logout = function(req, res) {
