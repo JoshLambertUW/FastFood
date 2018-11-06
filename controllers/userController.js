@@ -61,6 +61,16 @@ exports.user_fav_post = function(req, res, next){
     }
 };
 
+exports.user_upvote = function(req, res, next){
+    var vote = req.body.coupon.votes.filter(function(vote){
+        return vote.user_id === req.body.userID;
+    })[0]
+    
+    if(vote.type == 1) {
+        
+    }
+}
+
 exports.user_create_get = function(req, res) {
     if (req.user) res.redirect('/');
     res.render('register');
