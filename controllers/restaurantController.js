@@ -36,7 +36,14 @@ exports.restaurant_detail = function(req, res, next) {
             return next(err);
         }
         // Successful, so render.
-        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon, user: req.user } );
+        
+        if (!req.user || req.user.restaurants.indexOf(req.params.id) < 0 )
+          {favMsg = 'Add to favorites';}
+        else {favMsg = 'Remove from favorites';}
+        
+        //favMsg = req.favMsg;
+        
+        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon, user: req.user, favOption: favMsg} );
     });
 
 };

@@ -49,14 +49,14 @@ exports.user_fav_post = function(req, res, next){
     if (req.user.restaurants.indexOf(req.body.id) < 0){
         User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.body.id}}, {new: true}, function(err){
             if (err) { return next(err); }
-            res.json(200);
+            res.redirect('/restaurant/' + req.params.id);
         });
     }
     
     else {
         User.findByIdAndUpdate(req.user.id, {$pull: {restaurants: req.body.id}}, {new: true}, function(err){
             if (err){ return next(err); }
-            res.json(200);
+            res.redirect('/restaurant/' + req.params.id);
         });
     }
 };

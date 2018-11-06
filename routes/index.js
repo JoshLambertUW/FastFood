@@ -74,7 +74,7 @@ router.get('/profile', user_controller.restrict, user_controller.user_get);
 
 router.post('/changepwd', user_controller.restrict, user_controller.user_changepwd_post);
 
-router.post('/fav', user_controller.restrict, user_controller.user_fav_post);
+router.post('/restaurant/:id/fav', user_controller.restrict, user_controller.user_fav_post);
 
 router.get('/logout', user_controller.user_logout);
 
