@@ -47,29 +47,19 @@ exports.user_get = function(req, res) {
 
 exports.user_fav_post = function(req, res, next){
     if (req.user.restaurants.indexOf(req.body.id) < 0){
-        User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.body.id}}, {new: true}, function(err){
+        User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.params.id}}, {new: true}, function(err){
             if (err) { return next(err); }
             res.redirect('/restaurant/' + req.params.id);
         });
     }
     
     else {
-        User.findByIdAndUpdate(req.user.id, {$pull: {restaurants: req.body.id}}, {new: true}, function(err){
+        User.findByIdAndUpdate(req.user.id, {$pull: {restaurants: req.params.id}}, {new: true}, function(err){
             if (err){ return next(err); }
             res.redirect('/restaurant/' + req.params.id);
         });
     }
 };
-
-exports.user_upvote = function(req, res, next){
-    var vote = req.body.coupon.votes.filter(function(vote){
-        return vote.user_id === req.body.userID;
-    })[0]
-    
-    if(vote.type == 1) {
-        
-    }
-}
 
 exports.user_create_get = function(req, res) {
     if (req.user) res.redirect('/');

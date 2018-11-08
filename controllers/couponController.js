@@ -31,10 +31,55 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
+
       res.render('coupon', { title: 'Coupon details', coupon: coupon, user: req.user});
     })
 };
 
+exports.vote_coupon = function(req, res, next){
+    if (req.body.direction != 0 && req.body.direction != 1){
+        return next();
+    }
+    else {
+        Coupon.findById(req.body.id)
+        .exec(function (err, coupon){
+            if (err) { return next(err);}
+            if (coupon == null){
+                res.redirect('/coupons');
+            }
+            
+            if (req.body.direction === 1){
+                if (coupon.upvoted(req.user.id)){
+                    Coupon.unvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                        res.redirect('/coupon/' + req.params.id);
+                    });
+                }
+                else {
+                    Coupon.upvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                        res.redirect('/coupon/' + req.params.id);
+                    });
+                }
+            }
+            else {
+                if (coupon.downVoted(req.user.id)){
+                    Coupon.unvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                        res.redirect('/coupon/' + req.params.id);
+                    });
+                }
+                else {
+                    Coupon.downvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                        res.redirect('/coupons/' + req.params.id);
+                    });
+                }
+            }
+        });
+    }
+};
+    
 // Display Coupon create form on GET.
 exports.coupon_create_get = function(req, res, next) {    
     Restaurant.find({},'name',{ sort: { 'name': 1 } })

@@ -54,6 +54,9 @@ router.get('/coupon/:id/update', user_controller.restrict, coupon_controller.cou
 // POST request to update Coupon.
 router.post('/coupon/:id/update', user_controller.restrict, coupon_controller.coupon_update_post);
 
+// POST request to vote on a Coupon.
+router.post('/coupon/:id/vote', user_controller.restrict, coupon_controller.vote_coupon);
+
 // GET request for one Coupon.
 router.get('/coupon/:id', coupon_controller.coupon_detail);
 

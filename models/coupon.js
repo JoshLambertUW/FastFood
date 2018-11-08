@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var moment = require('moment');
+var mongooseVoting = require('mongoose-voting');
 
 var Schema = mongoose.Schema;
 
@@ -13,10 +14,10 @@ var CouponSchema = new Schema(
     date_expires: {type: Date},
     status: {type: String, required: true, enum: ['Expired', 'Unconfirmed', 'Valid', 'Invalid'], default: 'Valid'},
     user: { type: Schema.Types.ObjectId, ref: 'User'},
-    score: {type: Number},
-    votes: [{ type: Schema.Types.ObjectId, ref: 'User' , type: Number }],
   }
 );
+
+CouponSchema.plugin(mongooseVoting);
 
 // Virtual for Coupon's URL
 CouponSchema

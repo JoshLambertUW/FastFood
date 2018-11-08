@@ -14,6 +14,14 @@ block content
   p #{coupon.status}
   
   p
+  if (user)
+    form(method='POST' action=coupon.url + '/vote')
+      input(type='hidden', name='direction', value=1)
+      button.btn.btn-success(type='button') #{isUpVoted}
+    form(method='POST' action=coupon.url + '/vote')
+      input(type='hidden', name='direction', value=0)
+      button.btn.btn-danger(type='button') #{isDownVoted}
+  p
   if (user && user.id == coupon.user._id)
     a(href=coupon.url+'/delete') Delete Coupon
     br
