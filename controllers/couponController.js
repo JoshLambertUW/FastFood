@@ -31,8 +31,14 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
-
-      res.render('coupon', { title: 'Coupon details', coupon: coupon, user: req.user});
+      var upVote = 'Upvote';
+      var downVote = 'Downvote';
+      if (req.user){
+        if (coupon.upvoted(req.user.id)) upVote = 'Upvoted';
+        else if (coupon.downvoted(req.user.id)) downVote = 'Downvoted';
+      }
+      
+      res.render('coupon', { title: 'Coupon details', coupon: coupon, user: req.user, upVote: upVote, downVote: downVote});
     })
 };
 
@@ -41,7 +47,7 @@ exports.vote_coupon = function(req, res, next){
         return next();
     }
     else {
-        Coupon.findById(req.body.id)
+        Coupon.findById(req.params.id)
         .exec(function (err, coupon){
             if (err) { return next(err);}
             if (coupon == null){
@@ -49,30 +55,40 @@ exports.vote_coupon = function(req, res, next){
             }
             
             if (req.body.direction === 1){
+                if (coupon.downvoted(req.userid)){
+                    coupon.unvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                    });
+                }               
                 if (coupon.upvoted(req.user.id)){
-                    Coupon.unvote(req.user.id, function(err){
+                    coupon.unvote(req.user.id, function(err){
                         if (err) { return next(err);}
                         res.redirect('/coupon/' + req.params.id);
                     });
-                }
+                }               
                 else {
-                    Coupon.upvote(req.user.id, function(err){
+                    coupon.upvote(req.user.id, function(err){
                         if (err) { return next(err);}
                         res.redirect('/coupon/' + req.params.id);
                     });
                 }
             }
             else {
-                if (coupon.downVoted(req.user.id)){
-                    Coupon.unvote(req.user.id, function(err){
+                if (coupon.upvoted(req.userid)){
+                    coupon.unvote(req.user.id, function(err){
+                        if (err) { return next(err);}
+                    });
+                }
+                if (coupon.downvoted(req.user.id)){
+                    coupon.unvote(req.user.id, function(err){
                         if (err) { return next(err);}
                         res.redirect('/coupon/' + req.params.id);
                     });
                 }
                 else {
-                    Coupon.downvote(req.user.id, function(err){
+                    coupon.downvote(req.user.id, function(err){
                         if (err) { return next(err);}
-                        res.redirect('/coupons/' + req.params.id);
+                        res.redirect('/coupon/' + req.params.id);
                     });
                 }
             }

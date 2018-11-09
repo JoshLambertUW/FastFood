@@ -12,15 +12,21 @@ block content
   p #[strong Date Added:] #{coupon.date_added_formatted}
   p #[strong Expiration Date:] #{coupon.date_expired_formatted}
   p #{coupon.status}
+  p #{coupon.upvotes()} upvotes
+  p #{coupon.downvotes()} downvotes
   
   p
   if (user)
     form(method='POST' action=coupon.url + '/vote')
       input(type='hidden', name='direction', value=1)
-      button.btn.btn-success(type='button') #{isUpVoted}
+      button.btn.btn-success(type='submit') #{upVote}
+      
     form(method='POST' action=coupon.url + '/vote')
+      label(for='downvote')
       input(type='hidden', name='direction', value=0)
-      button.btn.btn-danger(type='button') #{isDownVoted}
+      button.btn.btn-danger(type='submit') #{downVote}
+      
+
   p
   if (user && user.id == coupon.user._id)
     a(href=coupon.url+'/delete') Delete Coupon

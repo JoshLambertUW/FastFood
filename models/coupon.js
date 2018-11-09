@@ -12,7 +12,6 @@ var CouponSchema = new Schema(
     mobile: {type: Boolean, default: false, required: true},
     code: {type: String, default: ''},
     date_expires: {type: Date},
-    status: {type: String, required: true, enum: ['Expired', 'Unconfirmed', 'Valid', 'Invalid'], default: 'Valid'},
     user: { type: Schema.Types.ObjectId, ref: 'User'},
   }
 );
@@ -38,11 +37,24 @@ CouponSchema
   return moment(this.date_expires).format('MMMM Do, YYYY');
 });
 
-// Virtual for bookinstance's URL
+CouponSchema.
+virtual('expired')
+.get(function() {
+    return (moment(this.date_expires) < moment());
+});
+
 CouponSchema
-.virtual('url')
+.virtual('totalScore')
 .get(function () {
-  return 'coupon/' + this._id;
+  return this.upvotes() - this.downvotes();
+});
+
+CouponSchema
+.virtual('status')
+.get(function() {
+  if (this.expired) return 'Expired';
+  if (Math.abs(this.totalScore) === 1) return this.totalScore + ' point';
+  return this.totalScore + ' points';
 });
 
 //Export model
