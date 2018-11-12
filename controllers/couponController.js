@@ -136,6 +136,8 @@ exports.coupon_create_post = [
             user: req.user,
          });
 
+        coupon.upvote(req.user.id);
+         
         if (!errors.isEmpty()) {
             // There are errors. Render form again with sanitized values and error messages.
             Restaurant.find({},'name')

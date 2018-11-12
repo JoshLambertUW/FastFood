@@ -1,28 +1,15 @@
 extends layout
+include ./coupon_list_mixin
 
 block content
   h1 #{restaurant.name}
-  p #[strong Site:] #{restaurant.site}
+  if restaurant.site
+    p #[strong Site:] #{restaurant.site}
   p #[strong Mobile App:] #{restaurant.mobile}
   
   div(style='margin-top:20px')
     h4 Coupons:
-    
-    each val in coupons
-      hr
-      p #[strong Description:] #{val.description}
-      if val.mobile
-        p Mobile Coupon
-      else
-        p Promo Code: #{val.code}
-      p #[strong Date Added:] #{val.date_added_formatted}
-      p #[strong Expiration Date:] #{val.date_expired_formatted}
-      p
-        a(href=val.url) #[strong Details]
-      p #{val.status}
-    else
-      p There are no coupons for this restaurant.
-      hr
+    +couponList(coupon_list)
     
   p
   if (user)

@@ -11,9 +11,7 @@ block content
     p Promo Code: #{coupon.code}
   p #[strong Date Added:] #{coupon.date_added_formatted}
   p #[strong Expiration Date:] #{coupon.date_expired_formatted}
-  p #{coupon.status}
-  p #{coupon.upvotes()} upvotes
-  p #{coupon.downvotes()} downvotes
+  p #[strong Status:] #{coupon.status}
   
   p
   if (user)

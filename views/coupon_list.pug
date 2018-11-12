@@ -1,23 +1,10 @@
 extends layout
+include ./coupon_list_mixin
 
 block content
   h1= title
+  hr
+  div(style='margin-top:80px')
+  h4= description
     
-    div(style='margin-top:30px')
-    
-    h4= description
-    
-    div(style='margin-top:30px')
-    
-      each val in coupon_list
-          p #[strong Restaurant:] #{val.restaurant.name}
-          p #[strong Description:] #{val.description}
-          p #[strong Date Added:] #{val.date_added_formatted}
-          p #[strong Expiration Date:] #{val.date_expired_formatted}
-          p #{val.status}
-          a(href=val.url) #[strong Details]
-          p
-          hr
-      else
-       p There are no coupons at this time.
-  
+  +couponList(coupon_list)

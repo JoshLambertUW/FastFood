@@ -1,23 +1,18 @@
 extends layout
+include ./coupon_list_mixin
 
 block content
 
   h1 Account Info
+  hr
   
   if (user.email)
     p #[strong Email:] #{user.email}
+    hr
   
   h3 Submitted coupons
   
-  each val in coupon_list
-        p #[strong Restaurant:] #{val.restaurant.name}
-        p #[strong Description:] #{val.description}
-        p #[strong Date Added:] #{val.date_added_formatted}
-        p #[strong Expiration Date:] #{val.date_expired_formatted}
-        p #{val.status}
-        a(href=val.url) #[strong Details]
-        p
-        hr
+  +couponList(coupon_list)
   
   div(style='margin-top:30px')
   
@@ -28,7 +23,7 @@ block content
     a(href=val.url) #[strong #{val.name}]
   
   div(style='margin-top:30px')
-  
+  hr
   p
   form(method='POST' action='/changepwd')
     div.form-group
