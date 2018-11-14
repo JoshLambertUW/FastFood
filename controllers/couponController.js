@@ -1,6 +1,7 @@
 var Coupon = require('../models/coupon');
 var Restaurant = require('../models/restaurant');
 var moment = require('moment');
+var consts = require('../consts.js');
  
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -9,14 +10,71 @@ var async = require('async');
 
 // Display list of all Coupons.
 exports.coupon_list = function(req, res, next) {
-  Coupon.find()
-    .populate('restaurant')
-    .exec(function (err, list_coupons) {
-      if (err) { return next(err); }
-      // Successful, so render
-      res.render('coupon_list', { title: 'Coupon List', coupon_list: list_coupons });
-    });
+    res.render('coupon_list', { title: 'Coupon List', coupon_list: req.list_coupons, pref: req.sortOption});   
+};
+
+exports.coupon_array = function(req, res, next){
+    var sortOption = 0;
+    var searchOption = '';
     
+    if (req.body.sortBy){
+        sortOption = req.body.sortBy;
+        req.session.sortByPref = sortOption;
+    }
+    else if (req.user && req.session.sortByPref){
+        sortOption = req.session.sortByPref;
+    }
+    
+    req.sortOption = sortOption;
+    
+    if (pageType == 'profile') searchOption = '{user: req.user.id'};
+    
+    else if (pageType == 'restaurant') searchOption = '{restaurant: req.params.id}';
+    
+    // Most popular
+    if (sortOption == 1){
+        Coupon.find(searchOption)
+          .sort('totalScore')
+          .populate('restaurant')
+          .exec(function (err, list_coupons) {
+          if (err) { return next(err); }
+              req.list_coupons = list_coupons;
+              next();
+          });
+    }
+    // Most upvotes
+    else if (sortOption == 2){
+        Coupon.find(searchOption)
+          .sort('upvotes')
+          .populate('restaurant')
+          .exec(function (err, list_coupons) {
+          if (err) { return next(err); }
+              req.list_coupons = list_coupons;
+              next();
+          });  
+    }
+    // Expiring soon
+    else if (sortOption == 3){
+        Coupon.find(searchOption)
+          .sort('date_expires')
+          .populate('restaurant')
+          .exec(function (err, list_coupons) {
+          if (err) { return next(err); }
+              req.list_coupons = list_coupons;
+              next();
+          });
+    }
+    // Newest
+    else {
+        Coupon.find(searchOption)
+          .sort({'date_added': -1})
+          .populate('restaurant')
+          .exec(function (err, list_coupons) {
+          if (err) { return next(err); }
+              req.list_coupons = list_coupons;
+              next();
+          });
+    }
 };
 
 // Display detail page for a specific Coupon.

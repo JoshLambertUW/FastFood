@@ -4,7 +4,7 @@ include ./coupon_list_mixin
 block content
   h1= title
   hr
-  div(style='margin-top:80px')
+  div(style='margin-top:20px')
   h4= description
     
-  +couponList(coupon_list)
+  +couponList(coupon_list, pref, sortByPrefs)

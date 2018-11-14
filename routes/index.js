@@ -29,7 +29,7 @@ router.get('/restaurant/:id/update', user_controller.restrict, restaurant_contro
 router.post('/restaurant/:id/update', passport.authenticate('local'), restaurant_controller.restaurant_update_post);
 
 // GET request for one Restaurant.
-router.get('/restaurant/:id', restaurant_controller.restaurant_detail);
+router.get('/restaurant/:id', coupon_controller.coupon_array, restaurant_controller.restaurant_detail);
 
 // GET request for list of all Restaurant items.
 router.get('/restaurants', restaurant_controller.restaurant_list);
@@ -61,7 +61,9 @@ router.post('/coupon/:id/vote', user_controller.restrict, coupon_controller.vote
 router.get('/coupon/:id', coupon_controller.coupon_detail);
 
 // GET request for list of all Coupon.
-router.get('/coupons', coupon_controller.coupon_list);
+router.get('/coupons/', coupon_controller.coupon_array,coupon_controller.coupon_list);
+
+router.post('/coupons/', coupon_controller.coupon_array, coupon_controller.coupon_list);
 
 /// AUTH ROUTES ///
 
@@ -73,7 +75,9 @@ router.get('/login', user_controller.user_login_get);
 
 router.post('/login', user_controller.user_login_post);
 
-router.get('/profile', user_controller.restrict, user_controller.user_get);
+router.get('/profile', user_controller.restrict, coupon_controller.coupon_array, user_controller.user_get);
+
+router.post('/profile', user_controller.restrict, coupon_controller.coupon_array, user_controller.user_get);
 
 router.post('/changepwd', user_controller.restrict, user_controller.user_changepwd_post);
 

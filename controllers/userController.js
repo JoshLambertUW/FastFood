@@ -25,6 +25,15 @@ exports.restrict = function(req, res, next){
 }
 
 exports.user_get = function(req, res) {
+    User.findById(req.user.id)
+    .populate('restaurants')
+    .exec(function(err, results){
+        if (err){ return next(err);}
+        res.render('profile', {coupon_list: req.list_coupons, pref: req.sortOptions, restaurants: results.restaurants});
+    });
+};
+/*
+exports.user_get = function(req, res) {
     async.parallel({
         coupons: function(callback){
             Coupon.find({user: req.user.id})
@@ -44,7 +53,7 @@ exports.user_get = function(req, res) {
         res.render('profile', {coupon_list: results.coupons, restaurants: results.favs.restaurants });
     });
 }
-
+*/
 exports.user_fav_post = function(req, res, next){
     if (req.user.restaurants.indexOf(req.body.id) < 0){
         User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.params.id}}, {new: true}, function(err){
