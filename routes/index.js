@@ -61,7 +61,7 @@ router.post('/coupon/:id/vote', user_controller.restrict, coupon_controller.vote
 router.get('/coupon/:id', coupon_controller.coupon_detail);
 
 // GET request for list of all Coupon.
-router.get('/coupons/', coupon_controller.coupon_array,coupon_controller.coupon_list);
+router.get('/coupons/', coupon_controller.coupon_array, coupon_controller.coupon_list);
 
 router.post('/coupons/', coupon_controller.coupon_array, coupon_controller.coupon_list);
 

@@ -1,5 +1,5 @@
 extends layout
-include ./coupon_list_mixin
+include ./mixins/coupon_list_mixin
 
 block content
   h1 #{restaurant.name}
@@ -9,7 +9,7 @@ block content
   
   div(style='margin-top:20px')
     h4 Coupons:
-    +couponList(coupon_list)
+    +couponList(coupon_list, pref, sortByPrefs)
     
   p
   if (user)

@@ -2,6 +2,7 @@ var Coupon = require('../models/coupon');
 var Restaurant = require('../models/restaurant');
 var moment = require('moment');
 var consts = require('../consts.js');
+var mongoose = require('mongoose');
  
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
@@ -14,67 +15,57 @@ exports.coupon_list = function(req, res, next) {
 };
 
 exports.coupon_array = function(req, res, next){
-    var sortOption = 0;
-    var searchOption = '';
+    var sortPref = 0;
+    var pageType = req.path.split('/')[1];
+    var findQuery = {};
+    var sortQuery = {};
+    
+    findOptions = {
+    'profile' : ['user', 'req.user.id'],
+    'restaurant' : ['restaurant', 'req.params.id']
+    };
     
     if (req.body.sortBy){
-        sortOption = req.body.sortBy;
-        req.session.sortByPref = sortOption;
+        if (req.user){
+            req.session.sortByPref = req.body.sortBy;
+        }
+        sortPref = req.body.sortBy;
     }
+    
     else if (req.user && req.session.sortByPref){
-        sortOption = req.session.sortByPref;
+        sortPref = req.session.sortByPref;
     }
     
-    req.sortOption = sortOption;
+    req.sortOption = sortPref;
+    sortQuery[sortOptions[sortPref]] = sortOptionOrders[sortPref];
     
-    if (pageType == 'profile') searchOption = '{user: req.user.id'};
-    
-    else if (pageType == 'restaurant') searchOption = '{restaurant: req.params.id}';
-    
-    // Most popular
-    if (sortOption == 1){
-        Coupon.find(searchOption)
-          .sort('totalScore')
-          .populate('restaurant')
-          .exec(function (err, list_coupons) {
-          if (err) { return next(err); }
-              req.list_coupons = list_coupons;
-              next();
-          });
+    if (pageType == 'profile'){
+        findQuery['user'] = req.user.id;
     }
-    // Most upvotes
-    else if (sortOption == 2){
-        Coupon.find(searchOption)
-          .sort('upvotes')
-          .populate('restaurant')
-          .exec(function (err, list_coupons) {
-          if (err) { return next(err); }
-              req.list_coupons = list_coupons;
-              next();
-          });  
+    else if (pageType == 'restaurant'){
+        findQuery['restaurant'] == 'req.params.id;
     }
-    // Expiring soon
-    else if (sortOption == 3){
-        Coupon.find(searchOption)
-          .sort('date_expires')
-          .populate('restaurant')
-          .exec(function (err, list_coupons) {
-          if (err) { return next(err); }
-              req.list_coupons = list_coupons;
-              next();
-          });
-    }
-    // Newest
     else {
-        Coupon.find(searchOption)
-          .sort({'date_added': -1})
-          .populate('restaurant')
-          .exec(function (err, list_coupons) {
+      Coupon.find()
+      .sort(sortQuery)
+      .populate('restaurant')
+      .exec(function (err, list_coupons) {
           if (err) { return next(err); }
+              console.log(req.params.id);
               req.list_coupons = list_coupons;
               next();
           });
     }
+    
+    Coupon.findById(findQuery)
+      .sort(sortQuery)
+      .populate('restaurant')
+      .exec(function (err, list_coupons) {
+          if (err) { return next(err); }
+              console.log(req.params.id);
+              req.list_coupons = list_coupons;
+              next();
+          });
 };
 
 // Display detail page for a specific Coupon.

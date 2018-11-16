@@ -1,4 +1,4 @@
-mixin couponList(coupon_list, pref, sortByPrefs, pageType)
+mixin couponList(coupon_list, pref, sortByPrefs)
   form(method='POST' action='/coupons' style={width:'125px', direction: 'rt', float:'right'})
     label(for='sortBy') Sort by:
     select#sortBy.form-control(type='select' name='sortBy' onchange='this.form.submit()')     

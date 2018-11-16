@@ -18,35 +18,22 @@ exports.restaurant_list = function(req, res, next) {
 
 // Display detail page for a specific restaurant.
 exports.restaurant_detail = function(req, res, next) {
-
-    async.parallel({
-        restaurant: function(callback) {
-            Restaurant.findById(req.params.id)
-              .exec(callback);
-        },
-        coupon: function(callback) {
-          Coupon.find({ 'restaurant': req.params.id })
-          .exec(callback);
-        },
-    }, function(err, results) {
-        if (err) { return next(err); }
-        if (results.restaurant==null) {
+    console.log(req.params.id);
+    Restaurant.findById(req.params.id)
+    .exec(function(err, results){
+        if (err){ return next(err);}
+        if (results==null) {
             var err = new Error('Restaurant not found');
             err.status = 404;
             return next(err);
         }
-        // Successful, so render.
-        
         if (!req.user || req.user.restaurants.indexOf(req.params.id) < 0 ) {favMsg = 'Add to favorites';}
         else {favMsg = 'Remove from favorites';}
         
-        //favMsg = req.favMsg;
-        
-        res.render('restaurant_detail', { title: 'Details', restaurant: results.restaurant, coupons: results.coupon, user: req.user, favOption: favMsg} );
+        res.render('restaurant_detail', { title: 'Details', restaurant: results, coupon_list: req.list_coupons, favOption: favMsg});
     });
-
 };
-
+//user: req.user,
 
 // Display restaurant create form on GET.
 exports.restaurant_create_get = function(req, res, next) { 
@@ -145,8 +132,7 @@ exports.restaurant_delete_post = function(req, res, next) {
 };
 
 // Display restaurant update form on GET.
-exports.restaurant_update_get = function(req, res, next) {
-
+exports.restaurant_update_get = function(req, res, next){
     // Get restaurant, authors and genres for form.
     async.parallel({
         restaurant: function(callback) {
