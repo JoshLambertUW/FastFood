@@ -11,7 +11,7 @@ var async = require('async');
 
 // Display list of all Coupons.
 exports.coupon_list = function(req, res, next) {
-    res.render('coupon_list', { title: 'Coupon List', coupon_list: res.locals.list_coupons, pref: req.sortOption});
+    res.render('coupon_list', { title: 'Coupon List', coupon_list: res.locals.list_coupons, pref: req.sortOption, expiredPref: req.session.expiredPref});
 };
 
 exports.coupon_array = function(req, res, next){
@@ -20,14 +20,9 @@ exports.coupon_array = function(req, res, next){
     var searchQuery = {};
     var sortQuery = {};
     
-    console.log(req.session.expiredPref);
-    console.log(req.query.expired);
+    req.session.expiredPref = req.query.expired ? true : false;
     
-    if (!req.session.expiredPref && !req.query.expired) searchQuery['expired'] = {$in: [null, false]};
-    
-    else if (req.query.expired){
-        req.session.expiredPref = req.query.expired;
-    }
+    if (!req.session.expiredPref) searchQuery['expired'] = {$in: [null, false]};
     
     if (req.query.sortBy){
         if (req.user){

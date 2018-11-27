@@ -18,7 +18,6 @@ exports.restaurant_list = function(req, res, next) {
 
 // Display detail page for a specific restaurant.
 exports.restaurant_detail = function(req, res, next) {
-    console.log(req.params.id);
     Restaurant.findById(req.params.id)
     .exec(function(err, results){
         if (err){ return next(err);}
@@ -29,11 +28,10 @@ exports.restaurant_detail = function(req, res, next) {
         }
         if (!req.user || req.user.restaurants.indexOf(req.params.id) < 0 ) {favMsg = 'Add to favorites';}
         else {favMsg = 'Remove from favorites';}
-        
+        console.log(req.session.expiredPref);
         res.render('restaurant_detail', { title: 'Details', restaurant: results, coupon_list: res.locals.list_coupons, pref: req.sortOption, expiredPref: req.session.expiredPref, favOption: favMsg});
     });
 };
-//user: req.user,
 
 // Display restaurant create form on GET.
 exports.restaurant_create_get = function(req, res, next) { 

@@ -29,7 +29,7 @@ exports.user_get = function(req, res) {
     .populate('restaurants')
     .exec(function(err, results){
         if (err){ return next(err);}
-        res.render('profile', {coupon_list: res.locals.list_coupons, pref: req.sortOptions, restaurants: results.restaurants});
+        res.render('profile', {coupon_list: res.locals.list_coupons, pref: req.sortOptions, restaurants: results.restaurants, expiredPref: req.session.expiredPref});
     });
 };
 
@@ -55,7 +55,7 @@ exports.user_create_get = function(req, res) {
 };
 
 exports.user_create_post = function(req, res) {
-    User.register(new User({ username : req.body.username }), req.body.password, function(err) {
+    User.register(new User({ username : req.body.username , email: req.body.email}), req.body.password, function(err) {
         if (err) {
             console.log(err.message);
             return res.render('register', {error: err.message});

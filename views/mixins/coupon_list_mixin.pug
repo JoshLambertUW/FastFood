@@ -1,16 +1,17 @@
 mixin couponList(coupon_list, pref, expiredPref, sortByPrefs, pageType)
-  form(method='GET' action=pageType style={width:'125px', direction: 'rt', float:'right'})
-    label(for='sortBy') Sort by:
-    select#sortBy.form-control(type='select' name='sortBy' onchange='this.form.submit()')     
-      for sortBy, index in sortByPrefs
-       if pref
-         option(value=index selected=(pref == index ? 'selected' : false)) #{sortBy}
-       else
-         option(value=index) #{sortBy}
-  
-  form(method='GET' action=pageType style={width:'125px', direction: 'rt', float:'right'})
-      label(for='expired') Show expired:
-      input.checkbox-input(type='checkbox' name='expired' checked=(undefined===expiredPref ? false : expiredPref) value='true' onchange='this.form.submit()')
+  form(method='GET' action=pageType style={width:'135px', direction: 'rt', float:'right'})
+    div.form-group
+        label(for='sortBy') Sort by:
+        select#sortBy.form-control(type='select' name='sortBy' onchange='this.form.submit()')     
+          for sortBy, index in sortByPrefs
+           if pref
+             option(value=index selected=(pref == index ? 'selected' : false)) #{sortBy}
+           else
+             option(value=index) #{sortBy}
+    div.form-group    
+        label(for='expired') Show expired &nbsp;
+        input.checkbox-input(type='checkbox' name='expired'  checked=(undefined===expiredPref ? false : expiredPref) value='true' onchange='this.form.submit()')
+      
              
   div(style='margin-top:80px')
   
