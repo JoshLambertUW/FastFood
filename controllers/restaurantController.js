@@ -30,7 +30,7 @@ exports.restaurant_detail = function(req, res, next) {
         if (!req.user || req.user.restaurants.indexOf(req.params.id) < 0 ) {favMsg = 'Add to favorites';}
         else {favMsg = 'Remove from favorites';}
         
-        res.render('restaurant_detail', { title: 'Details', restaurant: results, coupon_list: req.list_coupons, favOption: favMsg});
+        res.render('restaurant_detail', { title: 'Details', restaurant: results, coupon_list: res.locals.list_coupons, pref: req.sortOption, expiredPref: req.session.expiredPref, favOption: favMsg});
     });
 };
 //user: req.user,

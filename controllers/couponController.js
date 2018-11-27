@@ -11,25 +11,29 @@ var async = require('async');
 
 // Display list of all Coupons.
 exports.coupon_list = function(req, res, next) {
-    res.render('coupon_list', { title: 'Coupon List', coupon_list: req.list_coupons, pref: req.sortOption});   
+    res.render('coupon_list', { title: 'Coupon List', coupon_list: res.locals.list_coupons, pref: req.sortOption});
 };
 
 exports.coupon_array = function(req, res, next){
     var sortPref = 0;
     var pageType = req.path.split('/')[1];
-    var findQuery = {};
+    var searchQuery = {};
     var sortQuery = {};
     
-    findOptions = {
-    'profile' : ['user', 'req.user.id'],
-    'restaurant' : ['restaurant', 'req.params.id']
-    };
+    console.log(req.session.expiredPref);
+    console.log(req.query.expired);
     
-    if (req.body.sortBy){
+    if (!req.session.expiredPref && !req.query.expired) searchQuery['expired'] = {$in: [null, false]};
+    
+    else if (req.query.expired){
+        req.session.expiredPref = req.query.expired;
+    }
+    
+    if (req.query.sortBy){
         if (req.user){
-            req.session.sortByPref = req.body.sortBy;
+            req.session.sortByPref = req.query.sortBy;
         }
-        sortPref = req.body.sortBy;
+        sortPref = req.query.sortBy;
     }
     
     else if (req.user && req.session.sortByPref){
@@ -40,30 +44,18 @@ exports.coupon_array = function(req, res, next){
     sortQuery[sortOptions[sortPref]] = sortOptionOrders[sortPref];
     
     if (pageType == 'profile'){
-        findQuery['user'] = req.user.id;
+        searchQuery['user'] = req.user.id;
     }
     else if (pageType == 'restaurant'){
-        findQuery['restaurant'] == 'req.params.id;
-    }
-    else {
-      Coupon.find()
-      .sort(sortQuery)
-      .populate('restaurant')
-      .exec(function (err, list_coupons) {
-          if (err) { return next(err); }
-              console.log(req.params.id);
-              req.list_coupons = list_coupons;
-              next();
-          });
+        searchQuery['restaurant'] = req.params.id;
     }
     
-    Coupon.findById(findQuery)
+    Coupon.find(searchQuery)
       .sort(sortQuery)
       .populate('restaurant')
       .exec(function (err, list_coupons) {
-          if (err) { return next(err); }
-              console.log(req.params.id);
-              req.list_coupons = list_coupons;
+          if (err) { return next(err) }
+              res.locals.list_coupons = list_coupons;
               next();
           });
 };

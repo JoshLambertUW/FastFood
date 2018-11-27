@@ -29,32 +29,11 @@ exports.user_get = function(req, res) {
     .populate('restaurants')
     .exec(function(err, results){
         if (err){ return next(err);}
-        res.render('profile', {coupon_list: req.list_coupons, pref: req.sortOptions, restaurants: results.restaurants});
+        res.render('profile', {coupon_list: res.locals.list_coupons, pref: req.sortOptions, restaurants: results.restaurants});
     });
 };
-/*
-exports.user_get = function(req, res) {
-    async.parallel({
-        coupons: function(callback){
-            Coupon.find({user: req.user.id})
-            .sort({'date_added': -1})
-            .limit(5)
-            .populate('restaurant')
-            .exec(callback);
-        },
-        favs: function(callback){
-            User.findById(req.user.id)
-            .populate('restaurants')
-            .exec(callback);
-        },
-    }, function(err, results){
-        if (err){ return next(err);}
-        console.log(results.favs);
-        res.render('profile', {coupon_list: results.coupons, restaurants: results.favs.restaurants });
-    });
-}
-*/
-exports.user_fav_post = function(req, res, next){
+
+exports.user_fav = function(req, res, next){
     if (req.user.restaurants.indexOf(req.body.id) < 0){
         User.findByIdAndUpdate(req.user.id, {$push: {restaurants: req.params.id}}, {new: true}, function(err){
             if (err) { return next(err); }

@@ -61,9 +61,7 @@ router.post('/coupon/:id/vote', user_controller.restrict, coupon_controller.vote
 router.get('/coupon/:id', coupon_controller.coupon_detail);
 
 // GET request for list of all Coupon.
-router.get('/coupons/', coupon_controller.coupon_array, coupon_controller.coupon_list);
-
-router.post('/coupons/', coupon_controller.coupon_array, coupon_controller.coupon_list);
+router.get('/coupons', coupon_controller.coupon_array, coupon_controller.coupon_list);
 
 /// AUTH ROUTES ///
 
@@ -77,11 +75,9 @@ router.post('/login', user_controller.user_login_post);
 
 router.get('/profile', user_controller.restrict, coupon_controller.coupon_array, user_controller.user_get);
 
-router.post('/profile', user_controller.restrict, coupon_controller.coupon_array, user_controller.user_get);
-
 router.post('/changepwd', user_controller.restrict, user_controller.user_changepwd_post);
 
-router.post('/restaurant/:id/fav', user_controller.restrict, user_controller.user_fav_post);
+router.post('/restaurant/:id/fav', user_controller.restrict, user_controller.user_fav);
 
 router.get('/logout', user_controller.user_logout);
 
