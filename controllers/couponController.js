@@ -145,10 +145,6 @@ exports.coupon_create_get = function(req, res, next) {
 
 // Handle Coupon create on POST.
 exports.coupon_create_post = [
-    body('restaurant', 'Restaurant must be specified').isLength({ min: 1 }).trim(),
-    body('description', 'Description must be added').isLength({ min: 1 }).trim(),
-    body('code').trim(),
-    body('date_expires', 'Invalid date').optional({ checkFalsy: true }).isISO8601(),
     
     // Sanitize fields.
     sanitizeBody('restaurant').trim().escape(),
@@ -156,7 +152,6 @@ exports.coupon_create_post = [
     sanitizeBody('code').trim().escape(),
     sanitizeBody('date_expires').toDate(),
     
-    // Process request after validation and sanitization.
     (req, res, next) => {
 
         const errors = validationResult(req);
@@ -168,6 +163,8 @@ exports.coupon_create_post = [
             code: req.body.code,
             date_added: new Date(),
             date_expires: req.body.date_expires,
+            deal_type: req.body.deal_type,
+            deal_url: req.body.deal_url,
             mobile: req.body.mobile ? true : false,
             user: req.user,
          });
@@ -248,36 +245,31 @@ exports.coupon_update_get = function(req, res, next) {
 };
 
 // Handle coupon update on POST.
-exports.coupon_update_post = [
-    // Validate fields.
-    body('restaurant', 'Restaurant must be specified').isLength({ min: 1 }).trim(),
-    body('description', 'Description must be added').isLength({ min: 1 }).trim(),
-    body('code').trim(),
-    body('date_expires', 'Invalid date').optional({ checkFalsy: true }).isISO8601(),
-    
+exports.coupon_update_post = [    
     // Sanitize fields.
     sanitizeBody('restaurant').trim().escape(),
     sanitizeBody('description').trim().escape(),
     sanitizeBody('code').trim().escape(),
     sanitizeBody('date_expires').toDate(),
 
-    // Process request after validation and sanitization.
     (req, res, next) => {
 
         // Extract the validation errors from a request.
         const errors = validationResult(req);
         
         // Create a restaurant object with escaped/trimmed data and old id.
-        var coupon = new Coupon(
+                var coupon = new Coupon(
           { restaurant: req.body.restaurant,
             description: req.body.description,
             code: req.body.code,
             date_added: new Date(),
             date_expires: req.body.date_expires,
+            deal_type: req.body.deal_type,
+            deal_url: req.body.deal_url,
             mobile: req.body.mobile ? true : false,
-            _id:req.params.id,
             user: req.user.id,
-          });
+            _id:req.params.id,
+         });
 
         if (!errors.isEmpty()) {
             return res.render('coupon_form', { title: 'Edit coupon', coupon: coupon, errors: errors.array()});

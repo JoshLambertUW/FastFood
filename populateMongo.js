@@ -21,77 +21,129 @@ var db = mongoose.connection;
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var restaurants = []
-var coupons = []
 var users = []
-
-function userCreate(username, email, userPassword, restaurants, admin, cb) {
-  
-  var user = new User({username: username, email: email, restaurants: restaurants});
-  
-  User.register(user, userPassword, function(err){
-      if (err){
-          cb(err, null)
-          return
-      }
-      console.log('New User: ' + user);
-      users.push(user)
-      cb(null, author)
-  } );
-}
+var coupons = []
 
 function restaurantCreate(name, site, mobile, cb) {
    
-  var restaurant = new Restaurant(
-    { name: req.body.name,
-        site: req.body.site,
-        mobile: req.body.mobile ? true : false,
-    });
+  restaurant = { 
+        name: name,
+        mobile: mobile ? true : false,
+    }
     
-  restaurant.save(function (err) {
+  if (site != false) restaurant.site = site
+  
+  var restaurantEntry = new Restaurant(restaurant);
+    
+  restaurantEntry.save(function (err) {
     if (err) {
       cb(err, null)
       return
     }
-    console.log('New Restaurant: ' + restaurant);
-    restaurants.push(restaurant)
-    cb(null, restaurant)
+    
+    console.log('New Restaurant: ' + restaurantEntry);
+    restaurants.push(restaurantEntry)
+    cb(null, restaurantEntry)
   });
 }
 
+function userCreate(username, email, userPassword, restaurants, admin, cb) {
+  
+  user = {restaurants: restaurants, admin: admin}
+  if (email != false) user.email = email;
+  
+  var userEntry = new User(user);
+  
+  User.register(userEntry, userPassword, function(err){
+      if (err){
+          console.log(err)
+      }
+      console.log('New User: ' + userEntry);
+      users.push(userEntry)
+      cb(null, user)
+  } );
+}
 
-function couponCreate(restaurant, description, date_added, mobile, code, date_expires, user, cb) {
-  var coupon = new Coupon(
+
+function couponCreate(restaurant, description, code, date_added, date_expires, deal_type, deal_url, user, cb) {
+  coupon =
       { restaurant: restaurant,
-        description: escription,
-        code: code,
+        description: description,
         date_added: date_added,
         date_expires: date_expires,
-        mobile: mobile;
+        deal_type: deal_type,
         user: user,
-  });  
+      }
+
+  if (deal_url != false) coupon.deal_url = deal_url
+  if (code != false) coupon.code = code
+    
+  var couponEntry = new Coupon(coupon);
   
-  coupon.save(function (err) {
+  couponEntry.save(function (err) {
     if (err) {
-      console.log('ERROR CREATING Coupon: ' + coupon);
+      console.log('ERROR CREATING Coupon: ' + couponEntry);
       cb(err, null)
       return
     }
-    console.log('New Coupon: ' + coupon);
-    coupons.push(coupon)
-    cb(null, restaurant)
+    console.log('New Coupon: ' + couponEntry);
+    coupons.push(couponEntry)
+    cb(null, couponEntry)
   });
 }
 
 function createRestaurants(cb) {
-    //ToDo
+    async.parallel([
+        function(callback) {
+          restaurantCreate('Subway', 'Subway.com', false, callback);
+        },
+        function(callback) {
+          restaurantCreate('Mcdonalds', 'Mcdonalds.com', true, callback);
+        },
+        function(callback) {
+          restaurantCreate('Starbucks', 'Starbucks.com', true, callback);
+        },
+        function(callback) {
+          restaurantCreate('KFC', 'KFC.com', false, callback);
+        },
+        function(callback) {
+          restaurantCreate('Burger King', false, false, callback);
+        }
+        ],
+        cb);
 }
 
 function createUsers(cb) {
-    ToDo
+    async.parallel([
+        function(callback) {
+          userCreate('Equen1947', false, 'password1', [restaurants[3],restaurants[4],], false, callback);
+        },
+        function(callback) {
+          userCreate('Filly1970', 'Filly1970@test.com', 'password2', [restaurants[0],restaurants[3],], false, callback);
+        },
+        function(callback) {
+          userCreate('Rater1954', 'Rater1954@test.com', 'password3', [restaurants[0],restaurants[3],, restaurants[4]], false, callback);
+        },
+        function(callback) {
+          userCreate('Dentoory68', 'Dentoory68@test.com', 'password4',[], false, callback);
+        },
+        ],
+        cb);
 }
 
 function createCoupons(cb) {
-    //ToDo
+    async.parallel([
+        function(callback) {
+          couponCreate(restaurants[1], 'Buy one get one free item', false,new Date(2018, 1, 1),new Date(2020,1,1), 'Online', false,users[1], callback);
+        },
+        function(callback) {
+          couponCreate(restaurants[2], 'Free item', 'test01', new Date(2016,1,1),new Date(2017,1,1), 'Mobile', false,users[1], callback);
+        },
+        function(callback) {
+          couponCreate(restaurants[4], 'Buy one get one free item',false, Date(2018,2,1),Date(2019,2,1), 'Printable','http://www.test.com', users[0], callback);
+        },
+        ],
+        cb);
 }
 
 
@@ -114,6 +166,4 @@ function(err, results) {
     // All done, disconnect from database
     mongoose.connection.close();
 });
-
-
 

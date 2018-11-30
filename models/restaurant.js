@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 
 var RestaurantSchema = new Schema(
   {
-    name: {type: String, required: true},
+    name: {type: String, required: true, minLength: 2},
     site: {type: String, required: false,
           validate: {
             validator: function(v) {

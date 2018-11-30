@@ -40,15 +40,10 @@ exports.restaurant_create_get = function(req, res, next) {
 
 // Handle restaurant create on POST.
 exports.restaurant_create_post = [
-
-    // Validate input
-    body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-
     // Sanitize fields.
     sanitizeBody('name').trim().escape(),
     sanitizeBody('site').trim().escape(),
 
-    // Process request after validation and sanitization.
     (req, res, next) => {
         
         // Extract the validation errors from a request.
@@ -150,14 +145,10 @@ exports.restaurant_update_get = function(req, res, next){
 
 // Handle restaurant update on POST.
 exports.restaurant_update_post = [
-    // Validate fields.
-    body('name', 'Name must not be empty.').isLength({ min: 1 }).trim(),
-
     // Sanitize fields.
     sanitizeBody('name').trim().escape(),
     sanitizeBody('site').trim().escape(),
 
-    // Process request after validation and sanitization.
     (req, res, next) => {
 
         // Extract the validation errors from a request.

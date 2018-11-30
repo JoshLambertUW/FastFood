@@ -6,12 +6,21 @@ var Schema = mongoose.Schema;
 
 var CouponSchema = new Schema(
   {
-    restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
-    description: {type: String, required: true},
+    restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant',required: true, minLength: 2, },
+    description: {type: String, required: true, minLength: 3},
     date_added: {type: Date, required: true},
-    mobile: {type: Boolean, default: false, required: true},
-    code: {type: String, default: ''},
-    date_expires: {type: Date},
+    deal_type: {type: String, required: true, enum: ['Online', 'Mobile', 'Printable'], required: true},
+    deal_url: {type: String, required: false,
+          validate: {
+            validator: function(v) {
+                return /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi
+                .test(v);
+            },
+            message: props => `${props.value} is not a valid url`
+        },
+    },
+    code: {type: String, required: false, minLength: 2},
+    date_expires: {type: Date, required: false},
     user: { type: Schema.Types.ObjectId, ref: 'User'},
   }
 );

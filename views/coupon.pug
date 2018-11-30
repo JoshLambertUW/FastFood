@@ -8,7 +8,10 @@ block content
   if coupon.mobile
     p Mobile Coupon
   else
-    p Promo Code: #{coupon.code}
+    if coupon.deal_url
+      a(href=coupon.deal_url) Link to deal
+    if coupon.code
+      p Promo Code: #{coupon.code}
   p #[strong Date Added:] #{coupon.date_added_formatted}
   p #[strong Expiration Date:] #{coupon.date_expired_formatted}
   p #[strong Status:] #{coupon.status}
