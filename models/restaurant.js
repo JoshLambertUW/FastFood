@@ -15,6 +15,24 @@ var RestaurantSchema = new Schema(
         },
     },
     mobile: {type: Boolean, required: true},
+    android_url: {type: String, required: false,
+          validate: {
+            validator: function(v) {
+                return 'https:\/\/play\.google\.com\/store\/apps\/details\?id=[-a-zA-Z0-9@:%_\+.~#?&=]{2,256}'
+                .test(v);
+            },
+            message: props => `${props.value} is not a valid Play Store url`
+        },
+    },
+    ios_url: {type: String, required: false,
+          validate: {
+            validator: function(v) {
+                return 'https:\/\/itunes\.apple\.com\/us\/app\/[-a-zA-Z0-9@:%_\+.~#?&=]{2,256}'
+                .test(v);
+            },
+            message: props => `${props.value} is not a valid App store url`
+        },
+    },
   }
 );
 

@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 
 var CouponSchema = new Schema(
   {
-    restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant',required: true, minLength: 2, },
+    restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant',required: true},
     description: {type: String, required: true, minLength: 3},
     date_added: {type: Date, required: true},
     deal_type: {type: String, required: true, enum: ['Online', 'Mobile', 'Printable'], required: true},

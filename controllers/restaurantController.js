@@ -159,6 +159,8 @@ exports.restaurant_update_post = [
         {  name: req.body.name,
            site: req.body.site,
            mobile: req.body.mobile ? true : false,
+           android_url: req.body.android_url,
+           ios_url: req.body.ios_url,
            _id:req.params.id
         });
 
