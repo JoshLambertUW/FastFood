@@ -50,6 +50,10 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+const googleMapsClient = require('@google/maps').createClient({
+  key: process.env.MAPS_KEY,
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');

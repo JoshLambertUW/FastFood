@@ -33,6 +33,43 @@ exports.restaurant_detail = function(req, res, next) {
     });
 };
 
+exports.restaurant_location = function(req, res, next) {
+
+    body('user_location', 'Location must not be empty').isLength(1).trim(),
+  
+    // Sanitize fields (using wildcard).
+    sanitizeBody('*').trim().escape(),
+    
+    const errors = validationResult(req);
+    var lat;
+    var lng;
+        
+    if (!errors.isEmpty()) {
+      res.render('locations', {errors: errors.array() });
+      return;
+    }
+        
+    else {
+      googleMapsClient.geocode({
+      address: req.body.user_location }, function(err, response) {
+      if (!err) { return next(err); }
+        lat = response.results[0].geometry.location.lat;
+        lng = response.results[0].geometry.location.lng;
+      });
+    }
+        
+    googleMapsClient.places({
+      query: 'fast food',
+      location: [lat, lng],
+      radius: 10000,
+      type: 'restaurant'
+      }, function(err, response){
+        if (!err) { return next(err); }
+          res.render('locations', {lat: lat, lng: lng, places: response});
+      });
+    }
+};
+
 // Display restaurant create form on GET.
 exports.restaurant_create_get = function(req, res, next) { 
     res.render('restaurant_form', { title: 'Add a restaurant' });
@@ -45,9 +82,6 @@ exports.restaurant_create_post = [
     sanitizeBody('site').trim().escape(),
 
     (req, res, next) => {
-        
-        // Extract the validation errors from a request.
-        const errors = validationResult(req);
 
         // Create a restaurant object with escaped and trimmed data.
         var restaurant = new Restaurant(
@@ -56,12 +90,6 @@ exports.restaurant_create_post = [
             mobile: req.body.mobile ? true : false,
           });
 
-        if (!errors.isEmpty()) {
-            // There are errors. Render the form again with sanitized values/error messages.
-            res.render('restaurant_form', { title: 'Add a restaurant', restaurant: restaurant, errors: errors.array()});
-        return;
-        }
-        else {
             Restaurant.findOne({ 'name': req.body.name })
                 .exec( function(err, found_restaurant) {
                      if (err) { return next(err); }
@@ -78,7 +106,6 @@ exports.restaurant_create_post = [
                      }
 
                  });
-        }
     }
 ];
 
@@ -151,9 +178,6 @@ exports.restaurant_update_post = [
 
     (req, res, next) => {
 
-        // Extract the validation errors from a request.
-        const errors = validationResult(req);
-
         // Create a restaurant object with escaped/trimmed data and old id.
         var restaurant = new Restaurant(
         {  name: req.body.name,
@@ -164,11 +188,6 @@ exports.restaurant_update_post = [
            _id:req.params.id
         });
 
-        if (!errors.isEmpty()) {
-            res.render('restaurant_form', { title: 'Edit restaurant', restaurant: restaurant, errors: errors.array()});
-            return;
-        }
-        else {
             if (!req.user.admin) return next({Code: 403, error:'Access denied'});
             // Data from form is valid. Update the record.
             Restaurant.findByIdAndUpdate(req.params.id, restaurant, {}, function (err,therestaurant) {
@@ -176,6 +195,5 @@ exports.restaurant_update_post = [
                    // Successful - redirect to restaurant detail page.
                    res.redirect(therestaurant.url);
                 });
-        }
     }
 ];

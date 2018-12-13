@@ -31,6 +31,9 @@ router.post('/restaurant/:id/update', passport.authenticate('local'), restaurant
 // GET request for one Restaurant.
 router.get('/restaurant/:id', coupon_controller.coupon_array, restaurant_controller.restaurant_detail);
 
+// GET request for Restaurant locator
+router.get('/restaurant/:id/locations', restaurant_controller.restaurant_locations);
+
 // GET request for list of all Restaurant items.
 router.get('/restaurants', restaurant_controller.restaurant_list);
 

@@ -1,0 +1,47 @@
+extends layout
+
+block content
+
+    h1 Restaurant locations
+    
+    #map
+    
+    script.
+      function initMap() {
+        var map = new google.maps.Map(
+          document.getElementById('map'), {
+            zoom: 7,
+            center: { lat: #{lat}, lng: #{lng} }
+        });
+          
+        var bounds = new google.maps.LatLngBounds();
+        
+        
+        locations.forEach(function(l) {
+          var image = {
+          url: l.icon,
+          size: new google.maps.Size(71, 71),
+          origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25)
+          };
+          
+          var marker = new google.maps.Marker({
+          map: map,
+          icon: image,
+          title: l.name,
+          position: l.geometry.location
+          });
+          
+          bounds.extend(l.geometry.location);
+      });
+    }
+
+script(async defer src=`https://maps.googleapis.com/maps/api/js?key=${google_map_api_key}&callback=initMap`)
+
+    
+    
+    
+  
+    
+    
