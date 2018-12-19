@@ -6,6 +6,16 @@ block content
     
     #map
     
+    Location (e.g. Address, city, or zip code)
+    form(method='GET' action='')
+      input(type='text', required='true', name='user_location')
+      button.btn-primary(type='submit')
+    
+    if errors 
+      ul
+        for error in errors
+          li!= error.msg
+    
     script.
       function initMap() {
         var map = new google.maps.Map(
@@ -16,8 +26,7 @@ block content
           
         var bounds = new google.maps.LatLngBounds();
         
-        
-        locations.forEach(function(l) {
+        #{locations}.forEach(function(l) {
           var image = {
           url: l.icon,
           size: new google.maps.Size(71, 71),
@@ -34,10 +43,10 @@ block content
           });
           
           bounds.extend(l.geometry.location);
-      });
-    }
+          });
+      }
 
-script(async defer src=`https://maps.googleapis.com/maps/api/js?key=${google_map_api_key}&callback=initMap`)
+    script(async defer src=`https://maps.googleapis.com/maps/api/js?key=${google_map_api_key}&callback=initMap`)
 
     
     

@@ -4,6 +4,10 @@ var Coupon = require('../models/coupon');
 const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
+const googleMapsClient = require('@google/maps').createClient({
+  key: process.env.MAPS_KEY,
+});
+
 var async = require('async');
 
 // Display list of all restaurants
@@ -33,41 +37,39 @@ exports.restaurant_detail = function(req, res, next) {
     });
 };
 
-exports.restaurant_location = function(req, res, next) {
-
-    body('user_location', 'Location must not be empty').isLength(1).trim(),
-  
-    // Sanitize fields (using wildcard).
-    sanitizeBody('*').trim().escape(),
+exports.restaurant_location_get = function(req, res, next) {
     
-    const errors = validationResult(req);
-    var lat;
-    var lng;
-        
-    if (!errors.isEmpty()) {
-      res.render('locations', {errors: errors.array() });
-      return;
-    }
-        
-    else {
-      googleMapsClient.geocode({
-      address: req.body.user_location }, function(err, response) {
-      if (!err) { return next(err); }
-        lat = response.results[0].geometry.location.lat;
-        lng = response.results[0].geometry.location.lng;
-      });
-    }
-        
-    googleMapsClient.places({
-      query: 'fast food',
-      location: [lat, lng],
-      radius: 10000,
-      type: 'restaurant'
-      }, function(err, response){
-        if (!err) { return next(err); }
-          res.render('locations', {lat: lat, lng: lng, places: response});
-      });
-    }
+    var lat = 0;
+    var lng = 0;
+    
+    //Sanitize input
+    googleMapsClient.geocode({
+      address: req.params.user_location }, (function(err, response) {
+      if (err) { return next(err); }
+      var lat = response.json.results[0].geometry.location.lat;
+      var lng = response.json.results[0].geometry.location.lng;
+      })
+    );
+    
+    Restaurant.findById(req.params.id)
+    .exec(function(err, results){
+        if (err){ return next(err);}
+        if (results==null) {
+            var err = new Error('Restaurant not found');
+            err.status = 404;
+            return next(err);
+        }
+        googleMapsClient.places({
+        query: results.name,
+        location: [lat, lng],
+        radius: 10000,
+        type: 'restaurant'
+        }, (function(err, results){
+        if (err) { return next(err); }
+        res.render('locations', {lat: lat, lng:lng, locations: JSON.stringifyresults.json});
+        })
+    );
+    });
 };
 
 // Display restaurant create form on GET.

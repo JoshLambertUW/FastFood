@@ -11,10 +11,13 @@ block content
     h4 Coupons:
     +couponList(coupon_list, pref, expiredPref, sortByPrefs, restaurant.url)
     
-  form(method='GET' action=restaurant.url + 'locations')
-    input(type='text', required='true', name='location') Location (e.g. Address, city, or zip code)
-    button.btn-primary(type='submit')
-    
+  a(href=restaurant.url+'/locations') Find nearest location
+  
+  Location (e.g. Address, city, or zip code)
+    form(method='GET' action=restaurant.url+'/locations')
+      input(type='text', required='true', name='user_location')
+      button.btn-primary(type='submit')
+  
   if (user)
     form(method='POST' action=restaurant.url + '/fav')
       input(type='hidden', name='id', value=restaurant.id)
