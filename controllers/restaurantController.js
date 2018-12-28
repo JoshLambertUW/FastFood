@@ -44,32 +44,35 @@ exports.restaurant_location_get = function(req, res, next) {
     
     //Sanitize input
     googleMapsClient.geocode({
-      address: req.params.user_location }, (function(err, response) {
-      if (err) { return next(err); }
-      var lat = response.json.results[0].geometry.location.lat;
-      var lng = response.json.results[0].geometry.location.lng;
-      })
-    );
-    
-    Restaurant.findById(req.params.id)
-    .exec(function(err, results){
-        if (err){ return next(err);}
+      address: req.query.user_location }, (function(err, response) {
+      if (err) { 
+        console.log(req.query.user_location)
+        console.log(err);
+        return next(err); }
+      lat = response.json.results[0].geometry.location.lat;
+      lng = response.json.results[0].geometry.location.lng;
+      Restaurant.findById(req.params.id)
+        .exec(function(err, results){
+        if (err){ console.log(err); return next(err);}
         if (results==null) {
             var err = new Error('Restaurant not found');
             err.status = 404;
             return next(err);
         }
         googleMapsClient.places({
-        query: results.name,
-        location: [lat, lng],
-        radius: 10000,
-        type: 'restaurant'
-        }, (function(err, results){
-        if (err) { return next(err); }
-        res.render('locations', {lat: lat, lng:lng, locations: JSON.stringifyresults.json});
-        })
+          query: results.name,
+          location: [lat, lng],
+          radius: 10000,
+          type: 'restaurant'
+          }, (function(err, loc){
+          if (err) { console.log(err); return next(err); }
+          console.log(loc.json.results[0]);
+          res.render('locations', {restaurant: results.name, lat: lat, lng:lng, locations: loc.json.results, google_maps_api_key: process.env.MAPS_KEY});
+          })
+        );
+      });
+    })
     );
-    });
 };
 
 // Display restaurant create form on GET.

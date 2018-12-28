@@ -2,14 +2,23 @@ extends layout
 
 block content
 
-    h1 Restaurant locations
+    h1 #{restaurant} locations
     
-    #map
-    
+    style.
+      #map {
+        width: 100%;
+        height: 500px;
+        }
+        
     Location (e.g. Address, city, or zip code)
     form(method='GET' action='')
       input(type='text', required='true', name='user_location')
-      button.btn-primary(type='submit')
+      p
+      button.btn(type='submit') Search
+    
+    <p>
+    
+    #map
     
     if errors 
       ul
@@ -18,15 +27,18 @@ block content
     
     script.
       function initMap() {
+        var loc = !{JSON.stringify(locations)};
         var map = new google.maps.Map(
           document.getElementById('map'), {
-            zoom: 7,
+            zoom: 14,
             center: { lat: #{lat}, lng: #{lng} }
         });
           
         var bounds = new google.maps.LatLngBounds();
         
-        #{locations}.forEach(function(l) {
+        for (var i = 0; i < loc.length; i++){
+          var l = loc[i];
+          
           var image = {
           url: l.icon,
           size: new google.maps.Size(71, 71),
@@ -35,22 +47,33 @@ block content
             scaledSize: new google.maps.Size(25, 25)
           };
           
-          var marker = new google.maps.Marker({
+          let marker = new google.maps.Marker({
           map: map,
           icon: image,
           title: l.name,
-          position: l.geometry.location
+          position: l.geometry.location,
           });
           
+          let contentString = '<h1 id="heading" class="heading">'+ l.name + '</h1>' + 
+          '<div id = "bodyContent">' + 
+          '<p><b> Name: </b>' + l.name + '</p>' +
+          '<p><b>Address: </b>' + l.formatted_address + '</p>' +
+          '</div>';
+          
           bounds.extend(l.geometry.location);
+          map.fitBounds(bounds);
+          
+          var infowindow = new google.maps.InfoWindow();  
+
+          marker.addListener('click', function() {
+            infowindow.setOptions({content: contentString});
+            infowindow.open(map, marker);
           });
+        }
       }
+      
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    
+    script(async defer src='https://maps.googleapis.com/maps/api/js?v=3&key=' + google_maps_api_key + '&callback=initMap')
 
-    script(async defer src=`https://maps.googleapis.com/maps/api/js?key=${google_map_api_key}&callback=initMap`)
-
-    
-    
-    
-  
-    
-    
+        

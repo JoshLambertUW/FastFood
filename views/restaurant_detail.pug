@@ -10,13 +10,12 @@ block content
   div(style='margin-top:20px')
     h4 Coupons:
     +couponList(coupon_list, pref, expiredPref, sortByPrefs, restaurant.url)
-    
-  a(href=restaurant.url+'/locations') Find nearest location
   
   Location (e.g. Address, city, or zip code)
     form(method='GET' action=restaurant.url+'/locations')
       input(type='text', required='true', name='user_location')
-      button.btn-primary(type='submit')
+      p
+      button.btn(type='submit') Search
   
   if (user)
     form(method='POST' action=restaurant.url + '/fav')
