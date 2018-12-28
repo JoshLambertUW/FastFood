@@ -1,0 +1,15 @@
+mixin comments(comment_list, user)
+  each comment in comment_list
+    hr
+    p #[strong Username:] #{comment.user.username}
+    p #{comment.date_added_formatted}
+    hr
+    p #{comment.message}
+    if (user)
+      // vote helpful
+    hr
+  else
+    p There are no comments at this time.
+  
+  if (user)
+    //comment
