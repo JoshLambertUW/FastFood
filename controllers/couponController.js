@@ -4,7 +4,6 @@ var moment = require('moment');
 var consts = require('../consts.js');
 var mongoose = require('mongoose');
  
-const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 var async = require('async');
@@ -154,8 +153,6 @@ exports.coupon_create_post = [
     
     (req, res, next) => {
 
-        const errors = validationResult(req);
-
         // Create a Coupon object with escaped and trimmed data.
         var coupon = new Coupon(
           { restaurant: req.body.restaurant,
@@ -170,25 +167,12 @@ exports.coupon_create_post = [
          });
 
         coupon.upvote(req.user.id);
-         
-        if (!errors.isEmpty()) {
-            // There are errors. Render form again with sanitized values and error messages.
-            Restaurant.find({},'name')
-                .exec(function (err, restaurants) {
-                    if (err) { return next(err); }
-                    // Successful, so render.
-                    res.render('coupon_form', { title: 'Create a coupon', restaurant_list : restaurant, selected_restaurant : coupon.restaurant._id , errors: errors.array(), coupon:coupon });
-            });
-            return;
-        }
-        else {
-            // Data from form is valid.
-            coupon.save(function (err) {
-                if (err) { return next(err); }
-                   // Successful - redirect to new record.
-                   res.redirect(coupon.url);
-                });
-        }
+       
+        coupon.save(function (err) {
+          if (err) { return next(err); }
+            // Successful - redirect to new record.
+            res.redirect(coupon.url);
+        });
     }
 ];
 

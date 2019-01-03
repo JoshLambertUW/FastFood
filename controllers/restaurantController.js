@@ -1,7 +1,6 @@
 var Restaurant = require('../models/restaurant');
 var Coupon = require('../models/coupon');
 
-const { body,validationResult } = require('express-validator/check');
 const { sanitizeBody } = require('express-validator/filter');
 
 const googleMapsClient = require('@google/maps').createClient({

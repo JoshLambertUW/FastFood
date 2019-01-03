@@ -21,11 +21,5 @@ CommentSchema
   return moment(this.date_added).format('MMMM Do, YYYY');
 });
 
-CommentSchema
-.virtual('totalScore')
-.get(function () {
-  return this.upvotes() - this.downvotes();
-});
-
 //Export model
 module.exports = mongoose.model('Comment', CommentSchema);

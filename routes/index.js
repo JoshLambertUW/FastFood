@@ -4,6 +4,7 @@ var router = express.Router();
 var restaurant_controller = require('../controllers/restaurantController');
 var coupon_controller = require('../controllers/couponController');
 var user_controller = require('../controllers/userController');
+var comment_controller = require('../controllers/commentController');
 var passport = require('passport');
 
 // GET home page.
@@ -63,8 +64,17 @@ router.post('/coupon/:id/vote', user_controller.restrict, coupon_controller.vote
 // GET request for one Coupon.
 router.get('/coupon/:id', coupon_controller.coupon_detail);
 
-// GET request for list of all Coupon.
+// GET request for list of all Coupons.
 router.get('/coupons', coupon_controller.coupon_array, coupon_controller.coupon_list);
+
+/// COMMENT ROUTES ///
+
+// GET request to vote on a comment
+router.get('/comment/vote', user_controller.restrict, comment_controller.vote);
+
+router.post('/comment/:id', user_controller.restrict, comment_controller.new_comment);
+
+router.post('/comment/:id/delete', user_controller.restrict, comment_controller.delete_comment);
 
 /// AUTH ROUTES ///
 
