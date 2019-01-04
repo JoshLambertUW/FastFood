@@ -1,33 +1,33 @@
 mixin comments(comment_list, user)
   each comment in comment_list
     hr
-    var vote-status = 'Vote helpful'
-    p #[strong Username:] #{comment.user.username}
     p #{comment.date_added_formatted}
-    hr
+    p #[strong User:] #{comment.username}
     p #{comment.message}
+    p #[Strong Votes:] #{comment.upvotes()}
     if (user)
-      button(onclick='vote(comment.id)') #{vote-status}
-    p #[Strong votes:] #{comment.upvotes}
-    hr
+      button(onclick='vote(#comment.id)') Vote helpful
   else
     p There are no comments at this time.
   
   hr
   
   if !(user)
-    p Please login to vote
+    p Please 
+      a(href='/login') login
+      |  to vote
     
   if (user)
-    form(method='POST' action='/comment/' + comment+id)
+    form(method='POST' action='/comment/' + coupon.id)
       input(type='text', placeholder='Enter a new comment' required='true'  name='new_comment')
+      button.btn.btn-success(type='submit') Submit
     
   script.
-    var vote = (function(comment_id) {
-        #.ajax({
+    var vote = (function(commentID) {
+        $.ajax({
           type:'GET',
           url: '/comment/vote',
-          data: { comment_id: $(comment).id},
+          data: { comment_id: commentID },
           success: function(data){
             $('#vote-status').html(data);
           },

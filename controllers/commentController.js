@@ -35,17 +35,18 @@ exports.new_comment = [
     (req, res, next) => {
         
         var comment = new Comment(
-          { coupon: req.body.coupon,
-            new_comment: message,
+          { coupon: req.params.id,
+            message: req.body.new_comment,
             date_added: new Date(),
             user: req.user,
+            username: req.user.username,
           });
           
         comment.upvote(req.user.id);
         
         comment.save(function(err){
             if (err) { return next(err);}
-            res.redirect(req.body.coupon.url);
+            res.redirect('/coupon/' + req.params.id);
         });
     }        
 ];

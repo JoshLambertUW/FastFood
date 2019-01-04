@@ -1,5 +1,6 @@
 var Coupon = require('../models/coupon');
 var Restaurant = require('../models/restaurant');
+var Comment = require('../models/comment');
 var moment = require('moment');
 var consts = require('../consts.js');
 var mongoose = require('mongoose');
@@ -56,25 +57,34 @@ exports.coupon_array = function(req, res, next){
 
 // Display detail page for a specific Coupon.
 exports.coupon_detail = function(req, res, next) {
-    Coupon.findById(req.params.id)
-    .populate('restaurant')
-    .exec(function (err, coupon) {
+    async.parallel({
+        coupon: function(callback) {
+          Coupon.findById(req.params.id)
+          .populate('restaurant')
+          .exec(callback)
+        },
+        coupon_comments: function(callback){
+          Comment.find({ 'coupon': req.params.id})
+          .sort({date_added: -1})
+          .exec(callback);
+        },
+    }, function(err, results) {
       if (err) { return next(err); }
-      if (coupon==null) { // No results.
+      if (results.coupon==null) { // No results.
           var err = new Error('Coupon not found');
           err.status = 404;
           return next(err);
         }
       // Successful, so render.
-      var upVote = 'Upvote';
-      var downVote = 'Downvote';
+      var upVote = 'Working';
+      var downVote = 'Not working';
       if (req.user){
-        if (coupon.upvoted(req.user.id)) upVote = 'Upvoted';
-        else if (coupon.downvoted(req.user.id)) downVote = 'Downvoted';
+        if (results.coupon.upvoted(req.user.id)) upVote = 'Marked Working';
+        else if (results.coupon.downvoted(req.user.id)) downVote = 'Marked not working';
       }
       
-      res.render('coupon', { title: 'Coupon details', coupon: coupon, user: req.user, upVote: upVote, downVote: downVote});
-    })
+      res.render('coupon', { title: 'Coupon details', coupon: results.coupon, user: req.user, upVote: upVote, downVote: downVote, comment_list: results.coupon_comments});
+    });
 };
 
 exports.vote_coupon = function(req, res, next){
@@ -109,7 +119,7 @@ exports.vote_coupon = function(req, res, next){
                 }
             }
             else {
-                if (coupon.upvoted(req.userid)){
+                if (coupon.upvoted(req.user.id)){
                     coupon.unvote(req.user.id, function(err){
                         if (err) { return next(err);}
                     });

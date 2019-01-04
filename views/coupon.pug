@@ -26,8 +26,9 @@ block content
     form(method='POST' action=coupon.url + '/vote')
       label(for='downvote')
       input(type='hidden', name='direction', value=0)
-      button.btn.btn-danger(type='submit') #{downVote}      
-  p
+      button.btn.btn-danger(type='submit') #{downVote}     
+
+  hr
   
   +comments(comment_list, user)
   

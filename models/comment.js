@@ -10,6 +10,7 @@ var CommentSchema = new Schema(
     message: {type: String, required: true, minLength: 3},
     date_added: {type: Date, required: true},
     user: { type: Schema.Types.ObjectId, ref: 'User'},
+    username: {type: String, required: true},
   }
 );
 
