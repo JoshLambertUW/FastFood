@@ -1,12 +1,15 @@
 mixin comments(comment_list, user)
+  h4 Comments:
   each comment in comment_list
     hr
     p #{comment.date_added_formatted}
     p #[strong User:] #{comment.username}
     p #{comment.message}
-    p #[Strong Votes:] #{comment.upvotes()}
     if (user)
-      button(onclick='vote(#comment.id)') Vote helpful
+      p #[Strong Votes:]
+      button(onclick='vote("'+comment.id+'")') #{comment.upvotes()}
+    else
+      p #[Strong Votes:] #{comment.upvotes()}
   else
     p There are no comments at this time.
   
@@ -15,21 +18,24 @@ mixin comments(comment_list, user)
   if !(user)
     p Please 
       a(href='/login') login
-      |  to vote
+      |  to vote and comment
     
   if (user)
-    form(method='POST' action='/comment/' + coupon.id)
-      input(type='text', placeholder='Enter a new comment' required='true'  name='new_comment')
-      button.btn.btn-success(type='submit') Submit
-    
+    form(method='POST' action='/comment/' + coupon.id  style={width:'100%'})
+      textarea(type='text', rows='3', placeholder='Enter a new comment' required='true'  name='new_comment')
+      
+      button.btn.btn-success(
+      type='submit'
+      style='margin-left: 5px; margin-bottom: 10px;') Submit
+  
   script.
-    var vote = (function(commentID) {
+    let vote = (function(commentID) {
         $.ajax({
-          type:'GET',
+          type:'POST',
           url: '/comment/vote',
           data: { comment_id: commentID },
           success: function(data){
-            $('#vote-status').html(data);
+            this.status = data;
           },
           error: function(jqXHR, textStatus, err){
             alert('Status ' + textStatus + 'Err ' + err)

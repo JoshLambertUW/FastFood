@@ -69,8 +69,8 @@ router.get('/coupons', coupon_controller.coupon_array, coupon_controller.coupon_
 
 /// COMMENT ROUTES ///
 
-// GET request to vote on a comment
-router.get('/comment/vote', user_controller.restrict, comment_controller.vote);
+// POST request to vote on a comment
+router.post('/comment/vote', user_controller.restrict, comment_controller.vote);
 
 router.post('/comment/:id', user_controller.restrict, comment_controller.new_comment);
 
