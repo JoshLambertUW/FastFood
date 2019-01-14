@@ -5,11 +5,9 @@ mixin comments(comment_list, user)
     p #{comment.date_added_formatted}
     p #[strong User:] #{comment.username}
     p #{comment.message}
+    p #{comment.upvotes()}
     if (user)
-      p #[Strong Votes:]
-      button(onclick='vote("'+comment.id+'")') #{comment.upvotes()}
-    else
-      p #[Strong Votes:] #{comment.upvotes()}
+      button(onclick='vote("'+comment.id+'")') Vote
   else
     p There are no comments at this time.
   
@@ -35,7 +33,7 @@ mixin comments(comment_list, user)
           url: '/comment/vote',
           data: { comment_id: commentID },
           success: function(data){
-            this.status = data;
+            toastr.success(data);
           },
           error: function(jqXHR, textStatus, err){
             alert('Status ' + textStatus + 'Err ' + err)
@@ -43,4 +41,8 @@ mixin comments(comment_list, user)
         });
     });
 
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js')
+  
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+  
+  

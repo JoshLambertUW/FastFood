@@ -15,13 +15,13 @@ exports.vote = function(req, res, next) {
         if (comment.upvoted(req.user.id)){
             comment.unvote(req.user.id, function(err){
                 if (err) { return next(err);}
-                res.json('Mark helpful');
+                res.json('Comment unmarked helpful');
             });
         }
         else {
             comment.upvote(req.user.id, function(err){
                 if (err) { return next(err);}
-                res.json('Unmark helpful');
+                res.json('Comment marked helpful');
             });
         }
     });
