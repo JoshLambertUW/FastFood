@@ -21,12 +21,12 @@ block content
   if (user)
     form(method='POST' action=coupon.url + '/vote')
       input(type='hidden', name='direction', value=1)
-      button.btn.btn-success(type='submit') #{upVote}
+      button.btn.btn-success.btn-sm(type='submit') #{upVote}
       
     form(method='POST' action=coupon.url + '/vote')
       label(for='downvote')
       input(type='hidden', name='direction', value=0)
-      button.btn.btn-danger(type='submit') #{downVote}     
+      button.btn.btn-danger.btn-sm(type='submit') #{downVote}     
 
   hr
   

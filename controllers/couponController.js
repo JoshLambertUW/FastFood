@@ -76,8 +76,8 @@ exports.coupon_detail = function(req, res, next) {
           return next(err);
         }
       // Successful, so render.
-      var upVote = 'Working';
-      var downVote = 'Not working';
+      var upVote = 'Mark Working';
+      var downVote = 'Mark Not Working';
       if (req.user){
         if (results.coupon.upvoted(req.user.id)) upVote = 'Marked Working';
         else if (results.coupon.downvoted(req.user.id)) downVote = 'Marked not working';
@@ -98,13 +98,7 @@ exports.vote_coupon = function(req, res, next){
             if (coupon == null){
                 res.redirect('/coupons');
             }
-            
-            if (req.body.direction === 1){
-                if (coupon.downvoted(req.userid)){
-                    coupon.unvote(req.user.id, function(err){
-                        if (err) { return next(err);}
-                    });
-                }               
+            if (req.body.direction == 1){           
                 if (coupon.upvoted(req.user.id)){
                     coupon.unvote(req.user.id, function(err){
                         if (err) { return next(err);}
@@ -119,11 +113,6 @@ exports.vote_coupon = function(req, res, next){
                 }
             }
             else {
-                if (coupon.upvoted(req.user.id)){
-                    coupon.unvote(req.user.id, function(err){
-                        if (err) { return next(err);}
-                    });
-                }
                 if (coupon.downvoted(req.user.id)){
                     coupon.unvote(req.user.id, function(err){
                         if (err) { return next(err);}

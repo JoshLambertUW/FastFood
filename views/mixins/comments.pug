@@ -5,9 +5,17 @@ mixin comments(comment_list, user)
     p #{comment.date_added_formatted}
     p #[strong User:] #{comment.username}
     p #{comment.message}
-    p #{comment.upvotes()}
+    p Votes: #{comment.upvotes()}
     if (user)
-      button(onclick='vote("'+comment.id+'")') Vote
+      if (comment.upvoted(user.id))
+        button(class='btn btn-success btn-xs' onclick='vote("'+comment.id+'")') Marked helpful
+      else
+        button(class='btn btn-default btn-xs' onclick='vote("'+comment.id+'")') Mark helpful
+        
+      if (user.id == comment.user)
+        form(method='POST' action='/comment/delete')
+          input(type='hidden', name='comment_id', value=comment.id)
+          button.btn.btn-danger.btn-xs(type='submit') Delete comment
   else
     p There are no comments at this time.
   
@@ -40,9 +48,8 @@ mixin comments(comment_list, user)
           },
         });
     });
-
-  script(src='https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js')
+    
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js')
   
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-  
-  

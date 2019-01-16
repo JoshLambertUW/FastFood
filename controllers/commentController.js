@@ -59,5 +59,11 @@ exports.delete_comment = function(req, res, next) {
       if (req.user.id != results.user._id && !req.user.admin){
           return next({Code: 403, error: 'Access denied'});
       }
+      else {
+        Comment.findByIdAndRemove(req.body.comment_id, function(err) {
+        if (err){ return next(err); }
+          res.redirect('/coupon/' + req.params.id);
+        });
+      }
     });
 };
