@@ -74,7 +74,7 @@ router.post('/comment/vote', user_controller.restrict, comment_controller.vote);
 
 router.post('/comment/:id', user_controller.restrict, comment_controller.new_comment);
 
-router.post('/comment/delete', user_controller.restrict, comment_controller.delete_comment);
+router.post('/comment/:id/delete', user_controller.restrict, comment_controller.delete_comment);
 
 /// AUTH ROUTES ///
 

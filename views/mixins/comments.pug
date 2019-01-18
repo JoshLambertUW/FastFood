@@ -1,7 +1,8 @@
 mixin comments(comment_list, user)
   h4 Comments:
+  hr
   each comment in comment_list
-    hr
+    
     p #{comment.date_added_formatted}
     p #[strong User:] #{comment.username}
     p #{comment.message}
@@ -13,9 +14,9 @@ mixin comments(comment_list, user)
         button(class='btn btn-default btn-xs' onclick='vote("'+comment.id+'")') Mark helpful
         
       if (user.id == comment.user)
-        form(method='POST' action='/comment/delete')
-          input(type='hidden', name='comment_id', value=comment.id)
-          button.btn.btn-danger.btn-xs(type='submit') Delete comment
+        button(class='btn btn-danger btn-xs' onclick='deleteComment("'+comment.id+'")') Delete comment
+    hr
+     
   else
     p There are no comments at this time.
   
@@ -44,7 +45,22 @@ mixin comments(comment_list, user)
             toastr.success(data);
           },
           error: function(jqXHR, textStatus, err){
-            alert('Status ' + textStatus + 'Err ' + err)
+            toastr.error('Status ' + textStatus + 'Err ' + err)
+          },
+        });
+    });
+    
+  script.
+    let deleteComment = (function(commentID) {
+        $.ajax({
+          type:'POST',
+          url: '/comment/' + '#{coupon.id}' + '/delete',
+          data: { comment_id: commentID },
+          success: function(data){
+            toastr.success(data);
+          },
+          error: function(jqXHR, textStatus, err){
+            toastr.error('Status ' + textStatus + 'Err ' + err)
           },
         });
     });

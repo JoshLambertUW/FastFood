@@ -62,7 +62,7 @@ exports.delete_comment = function(req, res, next) {
       else {
         Comment.findByIdAndRemove(req.body.comment_id, function(err) {
         if (err){ return next(err); }
-          res.redirect('/coupon/' + req.params.id);
+          res.json('Comment deleted');
         });
       }
     });
