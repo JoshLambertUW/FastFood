@@ -13,7 +13,6 @@ var session = require('express-session');
 var acl = require('acl');
 
 var app = express();
-var app = express();
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -21,7 +20,6 @@ app.use(session({
   saveUninitialized: false
 }));
 
-app.use(bodyParser.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
